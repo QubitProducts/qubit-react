@@ -15,11 +15,17 @@ var QubitReactWrapper = React.createClass({
   },
 
   componentWillMount: function () {
-    this.getNamespace().update = this.forceUpdate
+    var ns = this.getNamespace()
+    ns.update = ns.update || []
+    ns.update.push(this.forceUpdate)
   },
 
   componentWillUnmount: function () {
-    delete this.getNamespace().update
+    var self = this
+    var ns = this.getNamespace()
+    ns.update = ns.update.filter(function (fn) {
+      return fn !== self.forceUpdate
+    })
   },
 
   render: function () {
