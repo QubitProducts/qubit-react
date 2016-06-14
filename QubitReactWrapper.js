@@ -15,16 +15,17 @@ var QubitReactWrapper = React.createClass({
   },
 
   componentWillMount: function () {
+    this.update = this.forceUpdate.bind(this)
     var ns = this.getNamespace()
     ns.update = ns.update || []
-    ns.update.push(this.forceUpdate)
+    ns.update.push(this.update)
   },
 
   componentWillUnmount: function () {
     var self = this
     var ns = this.getNamespace()
     ns.update = ns.update.filter(function (fn) {
-      return fn !== self.forceUpdate
+      return fn !== self.update
     })
   },
 
@@ -33,7 +34,9 @@ var QubitReactWrapper = React.createClass({
     if (handler) {
       var result = handler(this.props)
       if (typeof result === 'string') {
-        return <div dangerouslySetInnerHTML={{ __html: result }} />
+        return React.createElement('div', {
+          dangerouslySetInnerHTML: { __html: result }
+        })
       } else {
         return result
       }
