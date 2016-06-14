@@ -1,0 +1,14 @@
+{
+  "name": "qubit-react-wrapper",
+  "version": "1.0.0",
+  "description": "A wrapper component for use with Qubit Deliver",
+  "main": "QubitReactWrapper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Qubit",
+  "license": "MIT",
+  "peerDependencies": {
+    "react": "^0.14.0"
+  }
+}
