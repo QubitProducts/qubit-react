@@ -34,6 +34,7 @@ var QubitReactWrapper = React.createClass({
       try {
         return this.renderWithHandler()
       } catch (e) {
+        this.getErrorLogger && this.getErrorLogger(e)
         return this.props.children || null
       }
     } else {
@@ -51,6 +52,10 @@ var QubitReactWrapper = React.createClass({
     } else {
       return result
     }
+  },
+
+  getErrorLogger: function () {
+    return this.getNamespace().errorLogger
   },
 
   getHandler: function () {
