@@ -30,18 +30,26 @@ var QubitReactWrapper = React.createClass({
   },
 
   render: function () {
-    var handler = this.getHandler(this.props.id)
-    if (handler) {
-      var result = handler(this.props)
-      if (typeof result === 'string') {
-        return React.createElement('div', {
-          dangerouslySetInnerHTML: { __html: result }
-        })
-      } else {
-        return result
+    if (this.getHandler()) {
+      try {
+        return this.renderWithHandler()
+      } catch (e) {
+        return this.props.children || null
       }
     } else {
       return this.props.children || null
+    }
+  },
+
+  renderWithHandler: function () {
+    var handler = this.getHandler()
+    var result = handler(this.props)
+    if (typeof result === 'string') {
+      return React.createElement('div', {
+        dangerouslySetInnerHTML: { __html: result }
+      })
+    } else {
+      return result
     }
   },
 
