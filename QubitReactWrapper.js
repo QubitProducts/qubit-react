@@ -1,4 +1,5 @@
 var React = require('react')
+var createLogger = require('./lib/createLogger')
 
 var QubitReactWrapper = React.createClass({
   propTypes: {
@@ -34,7 +35,7 @@ var QubitReactWrapper = React.createClass({
       try {
         return this.renderWithHandler()
       } catch (e) {
-        this.getErrorLogger && this.getErrorLogger(e)
+        this.getLogger().error(e)
         return this.props.children || null
       }
     } else {
@@ -54,8 +55,11 @@ var QubitReactWrapper = React.createClass({
     }
   },
 
-  getErrorLogger: function () {
-    return this.getNamespace().errorLogger
+  getLogger: function () {
+    if (!this.logger) {
+      this.logger = createLogger(this.props.id)
+    }
+    return this.logger
   },
 
   getHandler: function () {

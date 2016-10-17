@@ -10,5 +10,20 @@
   "license": "MIT",
   "peerDependencies": {
     "react": "^0.14.0"
+  },
+  "dependencies": {
+    "driftwood": "^1.1.6"
+  },
+  "devDependencies": {
+    "@qubit/react-tools": "0.0.1",
+    "babel": "^6.5.2",
+    "babel-cli": "^6.16.0",
+    "babel-core": "^6.17.0",
+    "babel-loader": "^6.2.5",
+    "babel-preset-es2015": "^6.16.0",
+    "babel-preset-react": "^6.16.0",
+    "react-dom": "^0.14.0",
+    "webpack": "^1.13.2",
+    "webpack-dev-server": "^1.16.2"
   }
 }
