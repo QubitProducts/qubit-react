@@ -1,4 +1,7 @@
-.PHONY: test sandbox
+.PHONY: booststrap test sandbox
+
+bootstrap:
+	npm i
 
 test:
 	@echo 'No tests = no fail?'

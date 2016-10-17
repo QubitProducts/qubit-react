@@ -1,5 +1,5 @@
 var React = require('react')
-var createLogger = require('./lib/createLogger')
+var createLogger = require('./lib/createLogger')('handler')
 
 var QubitReactWrapper = React.createClass({
   propTypes: {
