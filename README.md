@@ -1,7 +1,7 @@
 QubitReactWrapper
 =================
 
-A wrapper for react components to allow modifiction in Qubit Experiences
+A wrapper for React components to allow modifiction in Qubit Experiences
 
 ### What it does
 
@@ -24,7 +24,7 @@ A unique `id` is required for each wrapped component. Any other props passed to 
 
 #### @qubit/react-tools
 
-It is recommend that [@qubit/react-tools][] is used within Qubit Experiences to interact with the wrapper as it provides a much simpler interface reducing a lot of boilerplate code.
+It is recommend that @qubit/react-tools is used within Qubit Experiences to interact with the wrapper as it provides a much simpler interface reducing a lot of boilerplate code.
 
 #### Manual usage
 
@@ -61,5 +61,4 @@ QubitReactWrapper uses [driftwood][] for logging. The API is exported to `window
 - `make sandbox` and then go to localhost:8080 to see the wrapper in action
 
 [driftwood]: https://github.com/QubitProducts/driftwood
-[@qubit/react-tools]: https://github.com/qubitdigital/deliver-lib/tree/master/lib/react-tools
 
