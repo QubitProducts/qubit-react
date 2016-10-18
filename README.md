@@ -58,6 +58,7 @@ QubitReactWrapper uses [driftwood][] for logging. The API is exported to `window
 
 - `make bootstrap` installs dependencies
 - `make test` run tests
+- `make test-watch` to run tests in watch mode
 - `make sandbox` and then go to localhost:8080 to see the wrapper in action
 
 [driftwood]: https://github.com/QubitProducts/driftwood
