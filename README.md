@@ -38,7 +38,7 @@ window.__qubit.reactHooks = window.__qubit.reactHooks || {}
 window.__qubit.reactHooks.header = window.__qubit.reactHooks.header || {}
 
 // Add the handler
-window.__qubit.reactHooks.header.handler = function (props) {
+window.__qubit.reactHooks.header.handler = function (props, React) {
   return React.createElement('h2', null, 'New Header')
 }
 
