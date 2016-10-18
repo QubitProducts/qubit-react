@@ -1,10 +1,15 @@
-.PHONY: booststrap test sandbox
+.PHONY: booststrap test test-watch sandbox
+
+BIN = ./node_modules/.bin
 
 bootstrap:
 	npm i
 
 test:
-	@echo 'No tests = no fail?'
+	$(BIN)/jest
+
+test-watch:
+	$(BIN)/jest --watchAll
 
 sandbox:
 	@(cd sandbox && make start)
