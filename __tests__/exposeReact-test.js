@@ -11,7 +11,7 @@ describe('onReactReady', () => {
     expect(window.__qubit.reactTools.React).toBe(fakeReact)
   })
 
-  it('runs onReactReady handlers', () => {
+  it('runs all onReactReady handlers', () => {
     const onReactReady = [jest.fn(), jest.fn()]
     window.__qubit = {
       reactTools: {
@@ -32,6 +32,17 @@ describe('onReactReady', () => {
       }
     }
     exposeReact(fakeReact)
+  })
+
+  it('runs clears onReactReady handlers after running them', () => {
+    const onReactReady = [() => {}, () => {}]
+    window.__qubit = {
+      reactTools: {
+        onReactReady: onReactReady
+      }
+    }
+    exposeReact({})
+    expect(window.__qubit.reactTools.onReactReady).toEqual([])
   })
 
   it('catches errors thrown from onReactReady handlers', () => {
