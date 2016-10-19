@@ -1,5 +1,8 @@
 var React = require('react')
+
+var createObjectPath = require('./lib/createObjectPath')
 var createLogger = require('./lib/createLogger')('handler')
+require('./lib/exposeReact')(React)
 
 var QubitReactWrapper = React.createClass({
   propTypes: {
@@ -9,10 +12,7 @@ var QubitReactWrapper = React.createClass({
 
   getNamespace: function () {
     var id = this.props.id
-    window.__qubit = window.__qubit || {}
-    window.__qubit.reactHooks = window.__qubit.reactHooks || {}
-    window.__qubit.reactHooks[id] = window.__qubit.reactHooks[id] || {}
-    return window.__qubit.reactHooks[id]
+    return createObjectPath(window, ['__qubit', 'reactHooks', id])
   },
 
   componentWillMount: function () {
@@ -31,7 +31,7 @@ var QubitReactWrapper = React.createClass({
   },
 
   render: function () {
-    if (this.getHandler()) {
+    if (this.getNamespace().handler) {
       try {
         return this.renderWithHandler()
       } catch (e) {
@@ -44,8 +44,8 @@ var QubitReactWrapper = React.createClass({
   },
 
   renderWithHandler: function () {
-    var handler = this.getHandler()
-    var result = handler(this.props)
+    var handler = this.getNamespace().handler
+    var result = handler(this.props, React)
     if (typeof result === 'string') {
       return React.createElement('div', {
         dangerouslySetInnerHTML: { __html: result }
@@ -60,10 +60,6 @@ var QubitReactWrapper = React.createClass({
       this.logger = createLogger(this.props.id)
     }
     return this.logger
-  },
-
-  getHandler: function () {
-    return this.getNamespace().handler
   }
 })
 
