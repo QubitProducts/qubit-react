@@ -28,7 +28,9 @@ It is recommend that @qubit/react-tools is used within Qubit Experiences to inte
 
 #### Manual usage
 
-The wrapper will create an object under `window.__qubit.reactHooks[id]` where the `id` is unique to the wrapped component. An array will be exposed under the update key which is a proxy of the forceUpdate function on the mounted components. These will need to be called after a handler is added to rerender the UI.
+**Attaching render function**
+
+The wrapper will create an object under `window.__qubit.reactHooks[id]` where the `id` is unique to the wrapped component. An array will be exposed under the update key which is a proxy of the forceUpdate function on the mounted components. These will need to be called after a render function is added to rerender the UI.
 
 To override the renderer, add a function to the object under the `handler` key
 ```js
@@ -46,6 +48,32 @@ window.__qubit.reactHooks.header.handler = function (props, React) {
 window.__qubit.reactHooks.header.update.forEeach(function (update) {
   update()
 })
+```
+
+**Exposing React**
+
+The wrapper will also expose React to `window.__qubit.reactTools.React`. In the case that this is not yet available when your code runs (the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.reactTools.onReactReady` array. These will be called when React is first exposed.
+
+```js
+
+if (window.__qubit && window.__qubit.reactTools && window.__qubit.reactTools.React) {
+  onReactReady(window.__qubit.reactTools.React)
+} else {
+  // Ensure the object path exists and create it if it doesn't
+  window.__qubit = window.__qubit || {}
+  window.__qubit.reactTools = window.__qubit.reactTools || {}
+
+  // Initiate the array if it's not there already
+  window.__qubit.reactTools.onReactReady = window.__qubit.reactTools.onReactReady || []
+
+  // Push your callback into the array
+  window.__qubit.reactTools.onReactReady.push(onReactReady)
+}
+
+function onReactReady (React) {
+  // Run your code
+  var CustomComponent = React.createClass({ ... })
+}
 ```
 
 ### Debugging
