@@ -1,6 +1,6 @@
 import exposeReact from '../lib/exposeReact'
 
-describe('onReactReady', () => {
+describe('exposeReact', () => {
   afterEach(() => {
     window.__qubit = undefined
   })

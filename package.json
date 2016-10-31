@@ -4,7 +4,8 @@
   "description": "A wrapper component for use with Qubit Deliver",
   "main": "wrapper/index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "prepublish": "./scripts/injectVersion"
   },
   "author": "Qubit",
   "license": "MIT",

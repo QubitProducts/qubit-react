@@ -3,6 +3,7 @@ var React = require('react')
 var createObjectPath = require('./lib/createObjectPath')
 var createLogger = require('./lib/createLogger')('handler')
 require('./lib/exposeReact')(React)
+require('./lib/exposeVersion')()
 
 var QubitReactWrapper = React.createClass({
   propTypes: {
