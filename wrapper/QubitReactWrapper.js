@@ -1,7 +1,7 @@
 var React = require('react')
 
 var createObjectPath = require('./lib/createObjectPath')
-var createLogger = require('./lib/createLogger')('handler')
+var createLogger = require('./lib/createLogger')('renderFunction')
 require('./lib/exposeReact')(React)
 require('./lib/exposeVersion')()
 

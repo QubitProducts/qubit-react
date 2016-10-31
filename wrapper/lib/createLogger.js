@@ -1,1 +1,1 @@
-module.exports = require('driftwood')('qubit-react-wrapper')
+module.exports = require('driftwood')('qubit-react')('wrapper')
