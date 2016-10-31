@@ -3,11 +3,11 @@ Qubit React
 
 A library for enabling Qubit Experiences on React sites
 
-### What it does
+## What it does
 
 By wrapping a component, Qubit React Wrapper will expose an API to a namespaced window object. This will allow custom render functions to be injected and override how the wrapped component will be rendered.
 
-### Site Implementation
+## Site Implementation
 
 To expose a component for use in Experiences, you will need to simply wrap your component with the Qubit React wrapper. For example:
 
@@ -22,9 +22,9 @@ import QubitReact from 'qubit-react'
 
 A unique `id` is required for each wrapped component. It is recommended that all props passed to the wrapped component are also passed to the wrapper. All the props passed to the wrapper component will be forwarded to your custom render function.
 
-### Usage
+## Usage
 
-#### qubit-react/experience
+### qubit-react/experience
 
 It is recommend that the included `qubit-react/experience` is used to interact with the wrapper as it provides a much simpler interface reducing a lot of boilerplate code.
 
@@ -94,7 +94,7 @@ experience.onReactReady(function (React) {
 })
 ```
 
-#### Manual usage
+### Manual usage
 
 This section provides more technical details on how the library functions and how to interact with the wrapper without using `qubit-react/experience`
 
@@ -145,13 +145,13 @@ function onReactReady (React) {
 }
 ```
 
-### Debugging
+## Debugging
 
 QubitReact uses [driftwood][] for logging. The API is exported to `window.__qubit.logger`, so to turn on logs run `window.__qubit.logger.enable()`. This will also work in production. Visit the [driftwood][] repo to see the full API documentation.
 
-### Development
+## Development
 
-#### Setup
+### Setup
 
 This project uses [yarn][] for dependency management
 
@@ -160,12 +160,12 @@ npm i -g yarn
 make bootstrap
 ```
 
-#### Running tests
+### Running tests
 
 - `make test` to run tests
 - `make test-watch` to run tests in watch mode
 
-#### Sandbox
+### Sandbox
 
 Simulates an environment to play around with the wrapper and experience utility library.
 `make sandbox` and then go to localhost:8080 to see the wrapper in action
