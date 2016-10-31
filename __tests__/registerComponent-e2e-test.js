@@ -1,6 +1,6 @@
 import { mount } from 'enzyme'
 
-import reactTools from '../react-tools'
+import experience from '../experience'
 
 it('registerComponent - e2e', () => {
   const React = require('react')
@@ -11,10 +11,10 @@ it('registerComponent - e2e', () => {
   }
 
   // Attach component before initial render
-  const registered = reactTools.registerComponent('wrapper', Replacement)
+  const registered = experience.registerComponent('wrapper', Replacement)
 
   // Render it
-  const QubitReactWrapper = require('qubit-react-wrapper')
+  const QubitReactWrapper = require('../wrapper')
   const mounted = mount(
     <QubitReactWrapper id='wrapper'>
       <div className='wrapped' />
@@ -30,7 +30,7 @@ it('registerComponent - e2e', () => {
   expect(mounted.find('.replaced').length).toEqual(0)
 
   // register another one after
-  reactTools.registerComponent('wrapper', Replacement)
+  experience.registerComponent('wrapper', Replacement)
   expect(mounted.find('.wrapped').length).toEqual(0)
   expect(mounted.find('.replaced').length).toEqual(1)
 })

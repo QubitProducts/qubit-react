@@ -1,16 +1,16 @@
 import { mount } from 'enzyme'
 
-import reactTools from '../react-tools'
+import experience from '../experience'
 
 it('registerRender - e2e', () => {
   // Attach render function before initial render
-  const registered = reactTools.registerRender('wrapper', (props, React) => {
+  const registered = experience.registerRender('wrapper', (props, React) => {
     return <div className='replaced' />
   })
 
   // Render it
   const React = require('react')
-  const QubitReactWrapper = require('qubit-react-wrapper')
+  const QubitReactWrapper = require('../wrapper')
   const mounted = mount(
     <QubitReactWrapper id='wrapper'>
       <div className='wrapped' />
@@ -26,7 +26,7 @@ it('registerRender - e2e', () => {
   expect(mounted.find('.replaced').length).toEqual(0)
 
   // register another one after
-  reactTools.registerRender('wrapper', (props, React) => {
+  experience.registerRender('wrapper', (props, React) => {
     return <div className='replaced' />
   })
   expect(mounted.find('.wrapped').length).toEqual(0)

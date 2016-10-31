@@ -1,4 +1,4 @@
-import reactTools from '../../react-tools'
+import reactTools from '../../experience'
 
 const wrapperId = 'wrappedComponent'
 
