@@ -1,5 +1,4 @@
-Qubit React
-===========
+# Qubit React [ ![Codeship Status for qubitdigital/qubit-react-wrapper](https://app.codeship.com/projects/d63db780-5b06-0134-b3eb-4297ec814d8e/status?branch=master)](https://app.codeship.com/projects/173267)
 
 A library for enabling Qubit Experiences on React sites
 
