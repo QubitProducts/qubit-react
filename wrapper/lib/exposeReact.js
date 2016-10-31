@@ -4,11 +4,11 @@ var createObjectPath = require('./createObjectPath')
 var logger = require('./createLogger')('onReactReady')
 
 module.exports = function exposeReact (React) {
-  var reactTools = createObjectPath(window, '__qubit.reactTools')
-  if (!reactTools.React) {
-    reactTools.React = React
+  var ns = createObjectPath(window, '__qubit.react')
+  if (!ns.React) {
+    ns.React = React
 
-    var onReactReady = reactTools.onReactReady
+    var onReactReady = ns.onReactReady
     if (onReactReady && _.isArray(onReactReady)) {
       _.each(onReactReady, function (cb) {
         try {
@@ -17,7 +17,7 @@ module.exports = function exposeReact (React) {
           logger.error(e)
         }
       })
-      reactTools.onReactReady = []
+      ns.onReactReady = []
     }
   }
 }

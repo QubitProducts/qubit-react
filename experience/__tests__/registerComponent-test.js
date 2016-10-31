@@ -14,7 +14,7 @@ describe('registerComponent', function () {
   })
   it('should register a render function that renders the component', () => {
     registerComponent(componentId, FooComponent)
-    const result = window.__qubit.reactHooks[componentId].handler({}, React)
+    const result = window.__qubit.react.components[componentId].renderFunction({}, React)
     expect(isElementOfType(result, FooComponent)).toEqual(true)
   })
   it('should register a render function that renders the component with the correct props', () => {
@@ -23,7 +23,7 @@ describe('registerComponent', function () {
       prop2: 'prop2'
     }
     registerComponent(componentId, FooComponent)
-    const result = window.__qubit.reactHooks[componentId].handler(props, React)
+    const result = window.__qubit.react.components[componentId].renderFunction(props, React)
     expect(result.props).toEqual(props)
   })
   it('should return a dispose function', () => {

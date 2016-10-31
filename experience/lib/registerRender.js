@@ -1,17 +1,17 @@
-var getComponentHook = require('./namespace').getComponentHook
+var getComponent = require('./namespace').getComponent
 var updateComponent = require('./updateComponent')
 
-module.exports = function registerRender (id, handler) {
-  var componentHook = getComponentHook(id)
-  if (componentHook.handler) {
-    throw new Error('A handler for ' + id + ' has already been registered')
+module.exports = function registerRender (id, renderFunction) {
+  var ns = getComponent(id)
+  if (ns.renderFunction) {
+    throw new Error('A renderFunction for ' + id + ' has already been registered')
   }
-  componentHook.handler = handler
+  ns.renderFunction = renderFunction
   updateComponent(id)
 
   return {
     dispose: function dispose () {
-      delete componentHook.handler
+      delete ns.renderFunction
       updateComponent(id)
     }
   }

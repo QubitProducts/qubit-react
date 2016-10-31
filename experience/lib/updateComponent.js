@@ -1,9 +1,9 @@
 var _ = require('slapdash')
 
-var getComponentHook = require('./namespace').getComponentHook
+var getComponent = require('./namespace').getComponent
 
 module.exports = function updateComponent (id) {
-  var updateFns = getComponentHook(id).update
+  var updateFns = getComponent(id).update
   if (updateFns && _.isArray(updateFns)) {
     _.each(updateFns, function (update) {
       update()

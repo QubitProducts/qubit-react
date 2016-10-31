@@ -11,9 +11,11 @@ describe('updateComponent', () => {
       jest.fn()
     ]
     window.__qubit = {
-      reactHooks: {
-        [componentId]: {
-          update: updateFns
+      react: {
+        components: {
+          [componentId]: {
+            update: updateFns
+          }
         }
       }
     }

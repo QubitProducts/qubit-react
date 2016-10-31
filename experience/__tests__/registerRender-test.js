@@ -9,7 +9,7 @@ describe('registerRender', () => {
     it('should register the handler successfully', () => {
       const handler = jest.fn()
       registerRender(componentId, handler)
-      expect(window.__qubit.reactHooks[componentId].handler).toBe(handler)
+      expect(window.__qubit.react.components[componentId].renderFunction).toBe(handler)
     })
     it('should return a dispose function', () => {
       const api = registerRender(componentId, noop)
@@ -18,7 +18,7 @@ describe('registerRender', () => {
     it('dispose function should remove handler', () => {
       const api = registerRender(componentId, noop)
       api.dispose()
-      expect(window.__qubit.reactHooks[componentId].handler).toBeUndefined()
+      expect(window.__qubit.react.components[componentId].renderFunction).toBeUndefined()
     })
     afterEach(() => {
       window.__qubit = undefined
@@ -30,9 +30,11 @@ describe('registerRender', () => {
     beforeEach(() => {
       forceUpdate = jest.fn()
       window.__qubit = {
-        reactHooks: {
-          [componentId]: {
-            update: [forceUpdate]
+        react: {
+          components: {
+            [componentId]: {
+              update: [forceUpdate]
+            }
           }
         }
       }
@@ -40,7 +42,7 @@ describe('registerRender', () => {
     it('should register the handler successfully', () => {
       const handler = jest.fn()
       registerRender(componentId, handler)
-      expect(window.__qubit.reactHooks[componentId].handler).toBe(handler)
+      expect(window.__qubit.react.components[componentId].renderFunction).toBe(handler)
     })
     it('should call the update functions', () => {
       registerRender(componentId, noop)
@@ -60,7 +62,7 @@ describe('registerRender', () => {
       it('should remove handler', () => {
         const api = registerRender(componentId, noop)
         api.dispose()
-        expect(window.__qubit.reactHooks[componentId].handler).toBeUndefined()
+        expect(window.__qubit.react.components[componentId].renderFunction).toBeUndefined()
       })
       it('should call the update functions', () => {
         const api = registerRender(componentId, noop)

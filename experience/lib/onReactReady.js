@@ -1,11 +1,11 @@
-var getReactTools = require('./namespace').getReactTools
+var getReact = require('./namespace').getReact
 
 module.exports = function onReactReady (cb) {
-  var reactTools = getReactTools()
-  if (reactTools.React) {
-    cb(reactTools.React)
+  var ns = getReact()
+  if (ns.React) {
+    cb(ns.React)
     return
   }
-  reactTools.onReactReady = reactTools.onReactReady || []
-  reactTools.onReactReady.push(cb)
+  ns.onReactReady = ns.onReactReady || []
+  ns.onReactReady.push(cb)
 }

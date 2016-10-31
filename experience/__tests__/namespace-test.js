@@ -1,16 +1,16 @@
 const namespace = require('../lib/namespace')
 
-describe('getReactTools', () => {
+describe('getReact', () => {
   it('creates react tools namespace', () => {
-    namespace.getReactTools()
-    expect(window.__qubit.reactTools).toBeDefined()
+    namespace.getReact()
+    expect(window.__qubit.react).toBeDefined()
   })
 })
 
-describe('getComponentHook', () => {
+describe('getComponent', () => {
   it('creates component namespace', () => {
     const componentId = 'foo'
-    namespace.getComponentHook(componentId)
-    expect(window.__qubit.reactHooks[componentId]).toBeDefined()
+    namespace.getComponent(componentId)
+    expect(window.__qubit.react.components[componentId]).toBeDefined()
   })
 })

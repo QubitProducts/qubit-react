@@ -3,7 +3,7 @@ const onReactReady = require('../lib/onReactReady')
 describe('onReactReady', () => {
   beforeEach(() => {
     window.__qubit = {
-      reactTools: {}
+      react: {}
     }
   })
   afterEach(() => {
@@ -13,10 +13,10 @@ describe('onReactReady', () => {
   describe('if react is ready', () => {
     const React = {}
     beforeEach(() => {
-      window.__qubit.reactTools.React = React
+      window.__qubit.react.React = React
     })
     afterEach(() => {
-      delete window.__qubit.reactTools.React
+      delete window.__qubit.react.React
     })
     it('runs the cb', () => {
       const cb = jest.fn()
@@ -39,7 +39,7 @@ describe('onReactReady', () => {
     it('adds the cb to onReactReady array', () => {
       const cb = jest.fn()
       onReactReady(cb)
-      const ns = window.__qubit.reactTools
+      const ns = window.__qubit.react
       expect(ns.onReactReady[0]).toBe(cb)
     })
   })

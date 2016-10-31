@@ -1,15 +1,15 @@
 var createObjectPath = require('./createObjectPath')
 
-function getReactTools () {
-  return createObjectPath(window, '__qubit.reactTools')
+function getReact () {
+  return createObjectPath(window, '__qubit.react')
 }
 
-function getComponentHook (id) {
-  var path = ['__qubit', 'reactHooks', id]
+function getComponent (id) {
+  var path = ['__qubit', 'react', 'components', id]
   return createObjectPath(window, path)
 }
 
 module.exports = {
-  getReactTools: getReactTools,
-  getComponentHook: getComponentHook
+  getReact: getReact,
+  getComponent: getComponent
 }

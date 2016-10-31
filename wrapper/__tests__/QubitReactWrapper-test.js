@@ -1,7 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 
-import QubitReactWrapper from '../QubitReactWrapper'
+import QubitReactWrapper from '../'
 
 describe('when there is no handler', () => {
   it('renders the children', () => {
@@ -21,9 +21,11 @@ describe('when there is a handler', () => {
       return <h2 className='bar'>Bar</h2>
     })
     window.__qubit = {
-      reactHooks: {
-        fooWrapper: {
-          handler: handler
+      react: {
+        components: {
+          fooWrapper: {
+            renderFunction: handler
+          }
         }
       }
     }
@@ -48,9 +50,11 @@ describe('when there is a handler', () => {
       expect(handlerProps).toEqual(props)
     }
     window.__qubit = {
-      reactHooks: {
-        fooWrapper: {
-          handler: handler
+      react: {
+        components: {
+          fooWrapper: {
+            handler: handler
+          }
         }
       }
     }
@@ -78,9 +82,11 @@ describe('when the handler throws an error', () => {
       throw new Error('handler error')
     })
     window.__qubit = {
-      reactHooks: {
-        fooWrapper: {
-          handler: handler
+      react: {
+        components: {
+          fooWrapper: {
+            handler: handler
+          }
         }
       }
     }

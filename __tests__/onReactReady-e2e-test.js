@@ -7,7 +7,7 @@ it('onReactReady - e2e', () => {
   const preOnReadyHandler = jest.fn()
   experience.onReactReady(preOnReadyHandler)
 
-  expect(window.__qubit.reactTools.onReactReady.length).toEqual(1)
+  expect(window.__qubit.react.onReactReady.length).toEqual(1)
   expect(preOnReadyHandler).not.toHaveBeenCalled()
 
   // Expose it
@@ -19,13 +19,13 @@ it('onReactReady - e2e', () => {
     </QubitReactWrapper>
   )
 
-  expect(window.__qubit.reactTools.onReactReady.length).toEqual(0)
+  expect(window.__qubit.react.onReactReady.length).toEqual(0)
   expect(preOnReadyHandler).toHaveBeenCalled()
 
   // Attach one after it's exposed
   const postOnReadyHandler = jest.fn()
   experience.onReactReady(postOnReadyHandler)
 
-  expect(window.__qubit.reactTools.onReactReady.length).toEqual(0)
+  expect(window.__qubit.react.onReactReady.length).toEqual(0)
   expect(postOnReadyHandler).toHaveBeenCalled()
 })

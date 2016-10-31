@@ -7,6 +7,6 @@ describe('exposeVersion', () => {
 
   it('exposes React to the correct location', () => {
     exposeVersion()
-    expect(window.__qubit.reactTools.version).not.toBeUndefined()
+    expect(window.__qubit.react.version).not.toBeUndefined()
   })
 })
