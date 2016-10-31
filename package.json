@@ -1,10 +1,10 @@
 {
-  "name": "qubit-react-wrapper",
+  "name": "qubit-react",
   "version": "1.0.2",
-  "description": "A wrapper component for use with Qubit Deliver",
+  "description": "A library for enabling Qubit Experiences on React sites",
   "main": "wrapper/index.js",
   "scripts": {
-    "test": "jest",
+    "test": "make test",
     "prepublish": "./scripts/injectVersion"
   },
   "author": "Qubit",
