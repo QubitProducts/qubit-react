@@ -7,10 +7,12 @@ class Container extends React.Component {
   render () {
     return (
       <div>
+        <h1>unWrapped</h1>
         <UnwrappedComponent />
-        <WrappedComponent
-          id='wrapped'
-        />
+        <br />
+        <br />
+        <h1>Wrapped</h1>
+        <WrappedComponent/>
       </div>
     )
   }

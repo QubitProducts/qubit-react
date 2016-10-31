@@ -1,6 +1,6 @@
 import React from 'react'
 
-import QubitReactWrapper from '../../QubitReactWrapper'
+import QubitReactWrapper from '../../wrapper'
 
 class WrappedComponent extends React.Component {
   render () {

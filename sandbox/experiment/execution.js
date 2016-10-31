@@ -1,28 +1,19 @@
-import React from 'react'
+import reactTools from '../../react-tools'
 
-const componentId = 'wrappedComponent'
+const wrapperId = 'wrappedComponent'
 
-function updateAll () {
-  window.__qubit.reactHooks[componentId].update.forEach(update => update())
+function execution () {
+  reactTools.onReactReady((React) => {
+    class Notice extends React.Component {
+      render () {
+        return <h2>Replaced</h2>
+      }
+    }
+
+    const notice = reactTools.registerComponent(wrapperId, Notice)
+
+    setTimeout(notice.dispose, 2000)
+  })
 }
 
-export default function execution () {
-  setTimeout(() => {
-    const end = Date.now() + 3000
-    function getRemaining () { return end - Date.now() }
-
-    const interval = setInterval(() => {
-      const remaining = getRemaining()
-      if (remaining < 0) {
-        delete window.__qubit.reactHooks[componentId].handler
-        clearInterval(interval)
-        updateAll()
-        return
-      }
-      window.__qubit.reactHooks[componentId].handler = function (props) {
-        return React.createElement('h2', null, `REVERTING IN ${remaining}`)
-      }
-      updateAll()
-    }, 200)
-  }, 1000)
-}
+export default execution

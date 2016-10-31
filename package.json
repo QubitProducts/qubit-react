@@ -2,7 +2,7 @@
   "name": "qubit-react-wrapper",
   "version": "1.0.2",
   "description": "A wrapper component for use with Qubit Deliver",
-  "main": "QubitReactWrapper.js",
+  "main": "wrapper/index.js",
   "scripts": {
     "test": "jest"
   },
