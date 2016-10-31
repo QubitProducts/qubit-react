@@ -1,9 +1,9 @@
-import React from 'react'
+import React, { Component } from 'react'
 
 import UnwrappedComponent from './UnwrappedComponent'
 import WrappedComponent from './WrappedComponent'
 
-class Container extends React.Component {
+class Container extends Component {
   render () {
     return (
       <div>

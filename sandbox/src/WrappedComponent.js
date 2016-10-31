@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-import QubitReactWrapper from '../../wrapper'
+import QubitReact from '../../wrapper'
 
-class WrappedComponent extends React.Component {
+class WrappedComponent extends Component {
   render () {
     return (
-      <QubitReactWrapper id='wrappedComponent'>
+      <QubitReact id='wrappedComponent'>
         <img src='http://i.giphy.com/D1owo2thD7Ts4.gif' />
-      </QubitReactWrapper>
+      </QubitReact>
     )
   }
 }
