@@ -2,8 +2,6 @@
 
 A library for enabling Qubit Experiences on React sites
 
-## What it does
-
 By wrapping a component, Qubit React Wrapper will expose an API to a namespaced window object. This will allow custom render functions to be injected and override how the wrapped component will be rendered.
 
 ## Site Implementation
@@ -23,8 +21,6 @@ A unique `id` is required for each wrapped component. It is recommended that all
 
 ## Usage
 
-### qubit-react/experience
-
 It is recommend that the included `qubit-react/experience` is used to interact with the wrapper as it provides a much simpler interface reducing a lot of boilerplate code.
 
 #### `onReactReady(cb)`
@@ -33,7 +29,6 @@ Waits for React to become available and runs the callback. Useful if React is re
 This will run the callback synchronously if React is already available. If React is not yet available, it will wait for it and run the callback synchronously as soon as React is available. This means that the callback will always be run before the initial render of the wrapper, eliminating the chance of any flicker.
 
 Example:
-
 ```js
 var experience = require('qubit-react/experience')
 
@@ -56,7 +51,6 @@ experience.onReactReady(function (React) {
 Registers the provided render function for the specified wrapper and updates all instances. An API is returned with a dispose function which allows the render function to be unregistered, use this dispose function before attempting to register another render function on the wrapper as only one can be registered at any time. An error will be thrown if you attempt to register another render function before this.
 
 Example:
-
 ```js
 var experience = require('qubit-react/experience')
 
@@ -74,17 +68,30 @@ setTimeout(function () {
 }, 5000)
 ```
 
-### Manual usage
+## Debugging
 
-This section provides more technical details on how the library functions and how to interact with the wrapper without using `qubit-react/experience`
+QubitReact uses [driftwood][] for logging. The API is exported to `window.__qubit.logger`, run `window.__qubit.logger.enable()` to turn on logs. Visit [driftwood][] to see the full API documentation.
 
-**Attaching render function**
+### More low level stuff...
 
-The wrapper will create an object under `window.__qubit.react.components[id]` where the `id` is unique to the wrapped component. An array will be exposed under the update key which is a proxy of the forceUpdate function on the mounted components. These will need to be called after a render function is added to rerender the UI.
+This section provides more technical details on how the wrapper operates.
 
-To override the renderer, add a function to the object under the `renderFunction` key
+**Determining render function**
+
+When a wrapper is first mounted, it will create an object under `window.__qubit.react.components[id]`, where the `id` is unique to the wrapper. There are two things on the object we care about:
+
+```js
+{
+  renderFunction: (props, React) => {}, // If this is present, it will be used as the render function for the wrapper
+  update: [] // Proxies of the `forceUpdate` function for each instance of the wrapper that is mounted
+}
+```
+
+Simply put, if the `renderFunction` exists, it will be used for the wrapper. Since the wrapper will not know when this is attached, the `update` functions should be called after attaching a new render function to ensure the relevant parts of the UI is rerendered.
+
 ```js
 // First ensure the object path exists and create it if it doesn't
+// This will be the case if no instances of the wrapper has been mounted
 window.__qubit = window.__qubit || {}
 window.__qubit.react = window.__qubit.react || {}
 window.__qubit.react.components = window.__qubit.react.components || {}
@@ -99,12 +106,11 @@ window.__qubit.react.components.header.renderFunction = function (props, React) 
 window.__qubit.react.components.header.update.forEach((update) => update())
 ```
 
-**Obtaining React**
+**Exposing React**
 
-The wrapper will also expose React to `window.__qubit.react.React`. In the case that this is not yet available when your code runs (the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.react.onReactReady` array. These will be called when React is first exposed.
+The wrapper will also expose React to `window.__qubit.react.React`. In the case that this is not yet available when your code runs (e.g. when the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.react.onReactReady` array. These will be called when React is first exposed.
 
 ```js
-
 if (window.__qubit && window.__qubit.react && window.__qubit.react.React) {
   onReactReady(window.__qubit.react.React)
 } else {
@@ -125,15 +131,11 @@ function onReactReady (React) {
 }
 ```
 
-## Debugging
-
-QubitReact uses [driftwood][] for logging. The API is exported to `window.__qubit.logger`, so to turn on logs run `window.__qubit.logger.enable()`. This will also work in production. Visit the [driftwood][] repo to see the full API documentation.
-
 ## Development
 
 ### Setup
 
-This project uses [yarn][] for dependency management
+This project uses [yarn][] for dependency management, to get up and running
 
 ```
 npm i -g yarn
