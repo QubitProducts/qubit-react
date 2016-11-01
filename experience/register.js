@@ -1,8 +1,10 @@
 var getComponent = require('../lib/namespace').getComponent
 var updateComponent = require('./updateComponent')
 var createLogger = require('./createLogger')('registerRender')
+var checkVersion = require('./checkVersion')
 
 module.exports = function register (id, renderFunction) {
+  checkVersion()
   var log = createLogger(id)
   var ns = getComponent(id)
   if (ns.renderFunction) {

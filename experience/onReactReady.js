@@ -1,7 +1,9 @@
 var getReact = require('../lib/namespace').getReact
 var log = require('./createLogger')('onReactReady')
+var checkVersion = require('./checkVersion')
 
 module.exports = function onReactReady (cb) {
+  checkVersion()
   var ns = getReact()
   if (ns.React) {
     log.debug('React available, running callback')
