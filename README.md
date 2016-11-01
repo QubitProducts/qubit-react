@@ -8,10 +8,10 @@ By wrapping a component, Qubit React Wrapper will expose an API to a namespaced 
 
 ## Site Implementation
 
-To expose a component for use in Experiences, you will need to simply wrap your component with the Qubit React wrapper. For example:
+To expose a component for use in Experiences, you will need to simply wrap your component with `qubit-react/wrapper`. For example:
 
 ```js
-import QubitReact from 'qubit-react'
+import QubitReact from 'qubit-react/wrapper'
 
 <QubitReact id='header' ...props>
   <Header ...props />
