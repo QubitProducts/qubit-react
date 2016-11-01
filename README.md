@@ -43,54 +43,35 @@ experience.onReactReady(function (React) {
       return <h2>{this.props.title}</h2>
     }
   })
-  experience.registerRender('searchHeader', function () {
+  experience.register('searchHeader', function () {
     return <CustomHeader title='Search' />
   })
-  experience.registerRender('navHeader', function () {
+  experience.register('navHeader', function () {
     return <CustomHeader title='Navigation' />
   })
 })
 ```
 
-#### `registerRender(id, renderFunction)`
-Registers the provided render function for the specified component and updates all instances. An API is returned with a dispose function which allows the render function to be unregistered, use this dispose function before attempting to register another render function as only one can be registered at any time. An error will be thrown if you attempt to register another render function before this.
+#### `register(id, renderFunction)`
+Registers the provided render function for the specified wrapper and updates all instances. An API is returned with a dispose function which allows the render function to be unregistered, use this dispose function before attempting to register another render function on the wrapper as only one can be registered at any time. An error will be thrown if you attempt to register another render function before this.
 
 Example:
 
 ```js
 var experience = require('qubit-react/experience')
 
-var searchHeader = experience.registerRender('searchHeader', function (props, React) {
+var searchHeader = experience.register('searchHeader', function (props, React) {
   return React.createElement('h2', null, 'Foo')
 })
 
 try {
   // An error will be thrown
-  experience.registerRender('searchHeader', function noop () {})
+  experience.register('searchHeader', function noop () {})
 } catch (e) {}
 
 setTimeout(function () {
   searchHeader.dispose()
 }, 5000)
-```
-
-#### `registerComponent(id, component)`
-Registers the provided component to be rendered with props passed into the wrapper. This returns the same API as `registerRender` and will also throw an error if there is an attempt to register more than once to the same component
-
-Example:
-
-```js
-var experience = require('qubit-react/experience')
-
-experience.onReactReady(function (React) {
-  var CustomHeader = React.createClass({
-    render: function () {
-      return <h2>{this.props.title}</h2>
-    }
-  })
-  experience.registerComponent('searchHeader', CustomHeader)
-  experience.registerComponent('navHeader', CustomHeader)
-})
 ```
 
 ### Manual usage

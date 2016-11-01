@@ -10,7 +10,9 @@ function execution () {
       }
     }
 
-    const notice = execution.registerComponent(wrapperId, Notice)
+    const notice = experience.register(wrapperId, (props, React) => {
+      return <Notice />
+    })
 
     setTimeout(notice.dispose, 2000)
   })

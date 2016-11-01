@@ -2,9 +2,9 @@ import { mount } from 'enzyme'
 
 import experience from '../experience'
 
-it('registerRender - e2e', () => {
+it('register - e2e', () => {
   // Attach render function before initial render
-  const registered = experience.registerRender('wrapper', (props, React) => {
+  const registered = experience.register('wrapper', (props, React) => {
     return <div className='replaced' />
   })
 
@@ -26,7 +26,7 @@ it('registerRender - e2e', () => {
   expect(mounted.find('.replaced').length).toEqual(0)
 
   // register another one after
-  experience.registerRender('wrapper', (props, React) => {
+  experience.register('wrapper', (props, React) => {
     return <div className='replaced' />
   })
   expect(mounted.find('.wrapped').length).toEqual(0)

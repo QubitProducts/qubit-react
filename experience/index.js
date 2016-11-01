@@ -1,5 +1,4 @@
 module.exports = {
-  registerRender: require('./lib/registerRender'),
-  registerComponent: require('./lib/registerComponent'),
+  register: require('./lib/register'),
   onReactReady: require('./lib/onReactReady')
 }

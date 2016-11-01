@@ -2,11 +2,11 @@ var getComponent = require('./namespace').getComponent
 var updateComponent = require('./updateComponent')
 var createLogger = require('./createLogger')('registerRender')
 
-module.exports = function registerRender (id, renderFunction) {
+module.exports = function register (id, renderFunction) {
   var log = createLogger(id)
   var ns = getComponent(id)
   if (ns.renderFunction) {
-    var message = 'A renderFunction for ' + id + ' has already been registered'
+    var message = 'A render function for ' + id + ' has already been registered'
     log.error(message)
     throw new Error(message)
   }
