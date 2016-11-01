@@ -20,6 +20,13 @@ it('register - e2e', () => {
   expect(mounted.find('.wrapped').length).toEqual(0)
   expect(mounted.find('.replaced').length).toEqual(1)
 
+  // Registering another should throw
+  expect(() => {
+    experience.register('wrapper', (props, React) => {
+      return <div className='anotherThing' />
+    })
+  }).toThrow()
+
   // Remove it
   registered.dispose()
   expect(mounted.find('.wrapped').length).toEqual(1)
