@@ -1,4 +1,4 @@
-const onReactReady = require('../lib/onReactReady')
+const onReactReady = require('../onReactReady')
 
 describe('onReactReady', () => {
   beforeEach(() => {

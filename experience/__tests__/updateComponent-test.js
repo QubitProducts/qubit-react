@@ -1,4 +1,4 @@
-const updateComponent = require('../lib/updateComponent')
+const updateComponent = require('../updateComponent')
 
 const componentId = 'foo'
 

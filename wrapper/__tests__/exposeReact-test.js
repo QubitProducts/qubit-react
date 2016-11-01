@@ -1,4 +1,4 @@
-import exposeReact from '../lib/exposeReact'
+import exposeReact from '../exposeReact'
 
 describe('exposeReact', () => {
   afterEach(() => {

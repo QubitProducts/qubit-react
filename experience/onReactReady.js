@@ -1,4 +1,4 @@
-var getReact = require('./namespace').getReact
+var getReact = require('../lib/namespace').getReact
 var log = require('./createLogger')('onReactReady')
 
 module.exports = function onReactReady (cb) {

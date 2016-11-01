@@ -1,4 +1,4 @@
-const register = require('../lib/register')
+const register = require('../register')
 
 function noop () {}
 

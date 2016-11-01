@@ -1,9 +1,9 @@
 var React = require('react')
 
-var createObjectPath = require('./lib/createObjectPath')
-var createLogger = require('./lib/createLogger')('renderFunction')
-require('./lib/exposeReact')(React)
-require('./lib/exposeVersion')()
+var getComponent = require('../lib/namespace').getComponent
+var createLogger = require('./createLogger')('renderFunction')
+require('./exposeReact')(React)
+require('./exposeVersion')()
 
 var QubitReactWrapper = React.createClass({
   propTypes: {
@@ -12,8 +12,7 @@ var QubitReactWrapper = React.createClass({
   },
 
   getNamespace: function () {
-    var id = this.props.id
-    return createObjectPath(window, ['__qubit', 'react', 'components', id])
+    return getComponent(this.props.id)
   },
 
   componentWillMount: function () {

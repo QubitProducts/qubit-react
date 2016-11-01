@@ -1,4 +1,4 @@
-var getComponent = require('./namespace').getComponent
+var getComponent = require('../lib/namespace').getComponent
 var updateComponent = require('./updateComponent')
 var createLogger = require('./createLogger')('registerRender')
 

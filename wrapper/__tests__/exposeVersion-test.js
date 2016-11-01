@@ -1,4 +1,4 @@
-import exposeVersion from '../lib/exposeVersion'
+import exposeVersion from '../exposeVersion'
 
 describe('exposeVersion', () => {
   afterEach(() => {

@@ -1,10 +1,10 @@
 var _ = require('slapdash')
 
-var createObjectPath = require('./createObjectPath')
-var logger = require('./createLogger')('onReactReady')
+var namespace = require('../lib/namespace')
+var log = require('./createLogger')('onReactReady')
 
 module.exports = function exposeReact (React) {
-  var ns = createObjectPath(window, '__qubit.react')
+  var ns = namespace.getReact()
   if (!ns.React) {
     ns.React = React
 
@@ -14,7 +14,7 @@ module.exports = function exposeReact (React) {
         try {
           cb(React)
         } catch (e) {
-          logger.error(e)
+          log.error(e)
         }
       })
       ns.onReactReady = []
