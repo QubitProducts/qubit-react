@@ -21,51 +21,165 @@ A unique `id` is required for each wrapped component. It is recommended that all
 
 ## Usage
 
-It is recommend that the included `qubit-react/experience` is used to interact with the wrapper as it provides a much simpler interface reducing a lot of boilerplate code.
+The included `qubit-react/experience` library is used to interact with the wrapper while working in Qubit Experiences.
 
-#### `onReactReady(cb)`
-Waits for React to become available and runs the callback. Useful if React is required to define reusable components.
+To initiate the library, the experience meta information needs to be passed in:
 
-This will run the callback synchronously if React is already available. If React is not yet available, it will wait for it and run the callback synchronously as soon as React is available. This means that the callback will always be run before the initial render of the wrapper, eliminating the chance of any flicker.
-
-Example:
 ```js
-var experience = require('qubit-react/experience')
-
-experience.onReactReady(function (React) {
-  var CustomHeader = React.createClass({
-    render: function () {
-      return <h2>{this.props.title}</h2>
-    }
-  })
-  experience.register('searchHeader', function () {
-    return <CustomHeader title='Search' />
-  })
-  experience.register('navHeader', function () {
-    return <CustomHeader title='Navigation' />
-  })
-})
+function experienceActivation (options, cb) {
+  var experience = require('qubit-react/experience')(options.meta)
+}
 ```
 
-#### `register(id, renderFunction)`
-Registers the provided render function for the specified wrapper and updates all instances. An API is returned with a dispose function which allows the render function to be unregistered, use this dispose function before attempting to register another render function on the wrapper as only one can be registered at any time. An error will be thrown if you attempt to register another render function before this.
+### Claiming wrappers
 
-Example:
+Qubit React uses a concept of wrapper ownership, which means that only a single experience can control the contents of a wrapper at any time. This reduces conflicts between experiences attempting to modify the same component.
+
+In order to take ownership of a wrapper, we use the `experience.register` function
+
 ```js
-var experience = require('qubit-react/experience')
+function experienceActivation (options, cb) {
+  var experience = require('qubit-react/experience')(options.meta)
 
-var searchHeader = experience.register('searchHeader', function (props, React) {
-  return React.createElement('h2', null, 'Foo')
-})
+  experience.register(['header'], function (slots, React) {
+    // If we get here, it means we have successfully claimed the wrapper
+  })
+}
+```
+### Releasing ownership
 
-try {
-  // An error will be thrown
-  experience.register('searchHeader', function noop () {})
-} catch (e) {}
+There are two ways to release ownership of wrappers, both function calls are identical but obtained in different ways to allow them to more easily suit the experience workflow.
 
-setTimeout(function () {
-  searchHeader.dispose()
-}, 5000)
+```js
+function experienceActivation (options, cb) {
+  var experience = require('qubit-react/experience')(options.meta)
+
+  var releaseMethod1, releaseMethod2
+
+  var releaseMethod1 = experience.register(['header'], function (slots, React) {
+    releaseMethod2 = slots.dipose
+  })
+
+  // releaseMethod1 === releaseMethod2
+}
+```
+
+Releasing the wrappers will remove all render functions attached and rerender the wrappers.
+
+### Rendering custom components
+
+```js
+function experienceExecution (options) {
+  var React = options.state.get('React')
+  var slots = options.state.get('slots')
+
+  class NewHeader extends React.Component {
+    render () {
+      return <h2>NEW HEADER</h2>
+    }
+  }
+
+  slots.render('header', function (props) {
+    return <NewHeader />
+  })
+}
+```
+
+### And unrendering...
+
+```js
+function experienceExecution (options) {
+  var React = options.state.get('React')
+  var slots = options.state.get('slots')
+
+  class NewHeader extends React.Component {
+    render () {
+      return <h2>NEW HEADER</h2>
+    }
+  }
+
+  slots.render('header', function (props) {
+    return <NewHeader />
+  })
+
+  setTimeout(() => {
+    slots.unrender('header')
+  }, 5000)
+}
+```
+
+
+### Full example
+
+**activation:**
+```js
+function experienceActivation (options, cb) {
+  var experience = require('qubit-react/experience')(options.meta)
+
+  var saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
+  var remaining = saleEnds - Date.now()
+  if (remaining > (60 * 60 * 1000)) return
+  if (remaining < 0) return
+
+  var release = experience.register([
+    'header-subtitle-text',
+    'promo-banner-text'
+  ], function (slots, React) {
+    options.state.set('saleEnds', saleEnds)
+    options.state.set('slots', slots)
+    options.state.set('React', React)
+    cb()
+  })
+
+  return {
+    remove: release
+  }
+}
+```
+
+**execution:**
+```js
+function experienceExecution (options) {
+  var saleEnds = options.state.get('saleEnds')
+  var React = options.state.get('React')
+  var slots = options.state.get('slots')
+
+  class Countdown extends React.Component {
+    componentWillMount () {
+      const { endDate } = this.props
+      this.state = {
+        remaining: endDate - Date.now()
+      }
+      const interval = setInterval(() => {
+        const remaining = endDate - Date.now()
+        this.setState({ remaining: endDate - Date.now() })
+        if (remaining < 0) {
+          clearInterval(interval)
+        }
+      }, 1000)
+    }
+
+    render () {
+      let secsLeft = Math.floor(this.state.remaining / 1000)
+      const minsLeft = Math.floor(secsLeft / 60)
+      secsLeft = secsLeft - (minsLeft * 60)
+      return <span>{`${minsLeft} mins and ${secsLeft} secs left`}</span>
+    }
+  }
+
+  slots.render('header-subtitle-text', function (props) {
+    return <span>Great offers somewhere...</span>
+  })
+
+  slots.render('promo-banner-text', function (props) {
+    return <Countdown endDate={saleEnds} />
+  })
+
+  return {
+    remove: slots.dispose
+  }
+}
+
 ```
 
 ## Debugging
