@@ -5,61 +5,65 @@ var log = require('./createLogger')
 var onReactReady = require('./onReactReady')
 var getWrapper = require('./getWrapper')
 
-module.exports = function register (ids, cb) {
-  checkVersion()
+module.exports = function createRegister (registrar) {
+  return function register (ids, cb) {
+    checkVersion()
 
-  var disposed = false
-  var wrappers = _.reduce(ids, function (memo, id) {
-    memo[id] = getWrapper(id)
-    return memo
-  }, {})
+    var disposed = false
+    var wrappers = _.reduce(ids, function (memo, id) {
+      memo[id] = getWrapper(registrar, id)
+      return memo
+    }, {})
 
-  var allAvailable = _.every(_.keys(wrappers), function (key) {
-    return wrappers[key].isUnclaimed()
-  })
-
-  if (allAvailable) {
-    _.each(_.keys(wrappers), function (key) {
-      wrappers[key].claim()
+    var allAvailable = _.every(_.keys(wrappers), function (key) {
+      return wrappers[key].isUnclaimed()
     })
 
-    onReactReady(function (React) {
-      cb({
-        render: function (id, fn) {
-          if (disposed) return
+    if (allAvailable) {
+      _.each(_.keys(wrappers), function (key) {
+        wrappers[key].claim()
+      })
 
-          if (!wrappers[id]) {
-            log(id).warn('Slot not found')
-            return
-          }
-          var success = wrappers[id].render(fn)
-          if (!success) {
-            log(id).error('Failed to render to ' + id)
-          }
-        },
-        unrender: function (id) {
-          if (disposed) return
+      onReactReady(function (React) {
+        cb({
+          render: function (id, fn) {
+            if (disposed) return
 
-          if (!wrappers[id]) {
-            log(id).warn('Slot not found')
-            return
-          }
-          var success = wrappers[id].unrender()
-          if (!success) {
-            log(id).error('Failed to unrender ' + id)
-          }
-        },
-        dispose: dispose
-      }, React)
-    })
-  }
+            if (!wrappers[id]) {
+              log(id).warn('Slot not found')
+              return
+            }
+            var success = wrappers[id].render(fn)
+            if (!success) {
+              log(id).error('Failed to render to ' + id)
+            }
+          },
+          unrender: function (id) {
+            if (disposed) return
 
-  return dispose
+            if (!wrappers[id]) {
+              log(id).warn('Slot not found')
+              return
+            }
+            var success = wrappers[id].unrender()
+            if (!success) {
+              log(id).error('Failed to unrender ' + id)
+            }
+          },
+          dispose: dispose
+        }, React)
+      })
+    }
 
-  function dispose () {
-    _.each(_.keys(wrappers), function (key) {
-      wrappers[key].release()
-    })
-    disposed = true
+    return dispose
+
+    function dispose () {
+      _.each(_.keys(wrappers), function (key) {
+        wrappers[key].release()
+      })
+      disposed = true
+    }
   }
 }
+
+

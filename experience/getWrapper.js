@@ -2,9 +2,8 @@ var _ = require('slapdash')
 
 var namespace = require('../lib/namespace')
 
-module.exports = function getWrapper (id) {
+module.exports = function getWrapper (registrar, id) {
   var ns = namespace.getComponent(id)
-  var uniq = '' + Date.now() + Math.ceil(Math.random() * 1000)
 
   return {
     isUnclaimed: function isUnclaimed () {
@@ -12,7 +11,7 @@ module.exports = function getWrapper (id) {
     },
     claim: function () {
       if (!ns.claimedBy) {
-        ns.claimedBy = uniq
+        ns.claimedBy = registrar
       }
     },
     release: checkYerPrivilege(function () {
@@ -32,7 +31,7 @@ module.exports = function getWrapper (id) {
 
   function checkYerPrivilege (fn) {
     return function () {
-      if (ns.claimedBy === uniq) {
+      if (ns.claimedBy === registrar) {
         fn.apply(fn, arguments)
         return true
       }

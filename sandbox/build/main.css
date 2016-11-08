@@ -1,0 +1,34 @@
+body {
+  font-family: 'Roboto', sans-serif;
+}
+
+.Header {
+  margin-bottom: 50px;
+}
+
+.Header-title > span {
+  font-size: 40px;
+}
+
+.Header-subtitle {
+  padding-left: 100px;
+}
+
+.Header-subtitle > span {
+  font-size: 18px;
+  font-style: italic;
+  color: grey;
+}
+
+.PromoBanner {
+  border: 1px solid black;
+  border-radius: 3px;
+  text-align: center;
+  padding: 20px;
+  margin: 10px;
+}
+
+.PromoBanner-text {
+  font-size: 24px;
+  font-weight: bold;
+}

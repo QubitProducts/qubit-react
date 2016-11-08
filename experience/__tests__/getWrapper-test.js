@@ -1,12 +1,14 @@
 import getWrapper from '../getWrapper'
 
+const registrar = '47147'
+const registrar2 = '74174'
 const componentId = 'foo'
 const noop = () => {}
 
 describe('getWrapper', () => {
   let wrapper
   beforeEach(() => {
-    wrapper = getWrapper(componentId)
+    wrapper = getWrapper(registrar, componentId)
   })
   afterEach(() => {
     wrapper = undefined
@@ -29,7 +31,7 @@ describe('getWrapper', () => {
       expect(window.__qubit.react.components[componentId].claimedBy).not.toBeUndefined()
     })
     it('does not claim when the wrapper is already claimed', () => {
-      getWrapper(componentId).claim()
+      getWrapper(registrar2, componentId).claim()
       const claimee = window.__qubit.react.components[componentId].claimedBy
       wrapper.claim()
       expect(window.__qubit.react.components[componentId].claimedBy).toBe(claimee)
@@ -39,7 +41,7 @@ describe('getWrapper', () => {
   describe('release', () => {
     describe('if not claimed by the instance', () => {
       beforeEach(() => {
-        getWrapper(componentId).claim()
+        getWrapper(registrar2, componentId).claim()
       })
       it('does not release the wrapper', () => {
         wrapper.release()

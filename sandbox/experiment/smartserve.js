@@ -6,7 +6,9 @@ import {
 var state = {}
 
 var options = {
-  meta: {},
+  meta: {
+    experimentId: 47147
+  },
   state: {
     set: (key, value) => { state[key] = value },
     get: (key) => { return state[key] }

@@ -1,59 +1,59 @@
-import experience from '../../experience'
-
-const wrapperId = 'wrappedComponent'
-
 export function activation (options, cb) {
-  const experience = require('../../experience')
+  var experience = require('../../experience')(options.meta)
 
-  experience.register([
-    'wrappedComponent',
-    'wrappedComponent2'
-  ], (slots, React) => {
+  var release = experience.register([
+    'header-subtitle-text',
+    'promo-banner-text'
+  ], function (slots, React) {
     options.state.set('slots', slots)
     options.state.set('React', React)
-
     cb()
   })
+
+  return {
+    remove: release
+  }
 }
 
 export function execution (options) {
-  const slots = options.state.get('slots')
-  const React = options.state.get('React')
+  var saleEnds = Date.now() + (10 * 60 * 1000)
+
+  var React = options.state.get('React')
+  var slots = options.state.get('slots')
 
   class Countdown extends React.Component {
     componentWillMount () {
-      const end = Date.now() + 2000
+      const { endDate } = this.props
       this.state = {
-        remaining: end - Date.now()
+        remaining: endDate - Date.now()
       }
       const interval = setInterval(() => {
-        const remaining = end - Date.now()
-        this.setState({ remaining: end - Date.now() })
+        const remaining = endDate - Date.now()
+        this.setState({ remaining: endDate - Date.now() })
         if (remaining < 0) {
           clearInterval(interval)
         }
-      }, 98)
+      }, 1000)
     }
 
     render () {
-      return <div>{`${this.state.remaining}ms left`}</div>
+      let secsLeft = Math.floor(this.state.remaining / 1000)
+      const minsLeft = Math.floor(secsLeft / 60)
+      secsLeft = secsLeft - (minsLeft * 60)
+      return <span>{`${minsLeft} mins and ${secsLeft} secs left`}</span>
     }
   }
 
-  class Notice extends React.Component {
-    render () {
-      return <h2>{`Replacement: ${this.props.message}`}</h2>
-    }
+  slots.render('header-subtitle-text', function (props) {
+    return <span>Great offers somewhere...</span>
+  })
+
+  slots.render('promo-banner-text', function (props) {
+    return <Countdown endDate={saleEnds} />
+  })
+
+  return {
+    remove: slots.dispose
   }
-
-  slots.render('wrappedComponent', (props) => {
-    return <Notice message='first one' />
-  })
-
-  slots.render('wrappedComponent2', (props) => {
-    return <Countdown />
-  })
-
-  setTimeout(slots.dispose, 3000)
 }
 
