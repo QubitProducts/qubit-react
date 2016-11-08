@@ -12,7 +12,8 @@ class Container extends Component {
         <br />
         <br />
         <h1>Wrapped</h1>
-        <WrappedComponent/>
+        <WrappedComponent id='wrappedComponent' />
+        <WrappedComponent id='wrappedComponent2' />
       </div>
     )
   }

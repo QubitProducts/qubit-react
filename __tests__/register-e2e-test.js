@@ -2,13 +2,7 @@ import { mount } from 'enzyme'
 
 import experience from '../experience'
 
-it('register - e2e', () => {
-  // Attach render function before initial render
-  const registered = experience.register('wrapper', (props, React) => {
-    return <div className='replaced' />
-  })
-
-  // Render it
+it('e2e', () => {
   const React = require('react')
   const QubitReactWrapper = require('../wrapper')
   const mounted = mount(
@@ -17,25 +11,29 @@ it('register - e2e', () => {
     </QubitReactWrapper>
   )
 
-  expect(mounted.find('.wrapped').length).toEqual(0)
-  expect(mounted.find('.replaced').length).toEqual(1)
+  // claim a wrapper
+  experience.register(['wrapper'], (slots, React) => {
+    expect(mounted.find('.wrapped').length).toEqual(1)
+    expect(mounted.find('.replaced').length).toEqual(0)
 
-  // Registering another should throw
-  expect(() => {
-    experience.register('wrapper', (props, React) => {
-      return <div className='anotherThing' />
-    })
-  }).toThrow()
+    slots.render('wrapper', () => { return <div className='replaced' /> })
+    expect(mounted.find('.wrapped').length).toEqual(0)
+    expect(mounted.find('.replaced').length).toEqual(1)
 
-  // Remove it
-  registered.dispose()
-  expect(mounted.find('.wrapped').length).toEqual(1)
-  expect(mounted.find('.replaced').length).toEqual(0)
+    slots.render('wrapper', () => { return <div className='anotherThing' /> })
+    expect(mounted.find('.wrapped').length).toEqual(0)
+    expect(mounted.find('.replaced').length).toEqual(0)
+    expect(mounted.find('.anotherThing').length).toEqual(1)
 
-  // register another one after
-  experience.register('wrapper', (props, React) => {
-    return <div className='replaced' />
+    slots.unrender('wrapper')
+    expect(mounted.find('.wrapped').length).toEqual(1)
+    expect(mounted.find('.replaced').length).toEqual(0)
+    expect(mounted.find('.anotherThing').length).toEqual(0)
+
+    slots.render('wrapper', () => { return <div className='replaced' /> })
+    slots.dispose()
+    expect(mounted.find('.wrapped').length).toEqual(1)
+    expect(mounted.find('.replaced').length).toEqual(0)
+    expect(mounted.find('.anotherThing').length).toEqual(0)
   })
-  expect(mounted.find('.wrapped').length).toEqual(0)
-  expect(mounted.find('.replaced').length).toEqual(1)
 })

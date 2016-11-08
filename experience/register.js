@@ -1,31 +1,65 @@
-var getComponent = require('../lib/namespace').getComponent
-var updateComponent = require('./updateComponent')
-var createLogger = require('./createLogger')('registerRender')
-var checkVersion = require('./checkVersion')
+var _ = require('slapdash')
 
-module.exports = function register (id, renderFunction) {
+var checkVersion = require('./checkVersion')
+var log = require('./createLogger')
+var onReactReady = require('./onReactReady')
+var getWrapper = require('./getWrapper')
+
+module.exports = function register (ids, cb) {
   checkVersion()
-  var log = createLogger(id)
-  var ns = getComponent(id)
-  if (ns.renderFunction) {
-    var message = 'A render function for ' + id + ' has already been registered'
-    log.error(message)
-    throw new Error(message)
+
+  var disposed = false
+  var wrappers = _.reduce(ids, function (memo, id) {
+    memo[id] = getWrapper(id)
+    return memo
+  }, {})
+
+  var allAvailable = _.every(_.keys(wrappers), function (key) {
+    return wrappers[key].isUnclaimed()
+  })
+
+  if (allAvailable) {
+    _.each(_.keys(wrappers), function (key) {
+      wrappers[key].claim()
+    })
+
+    onReactReady(function (React) {
+      cb({
+        render: function (id, fn) {
+          if (disposed) return
+
+          if (!wrappers[id]) {
+            log(id).warn('Slot not found')
+            return
+          }
+          var success = wrappers[id].render(fn)
+          if (!success) {
+            log(id).error('Failed to render to ' + id)
+          }
+        },
+        unrender: function (id) {
+          if (disposed) return
+
+          if (!wrappers[id]) {
+            log(id).warn('Slot not found')
+            return
+          }
+          var success = wrappers[id].unrender()
+          if (!success) {
+            log(id).error('Failed to unrender ' + id)
+          }
+        },
+        dispose: dispose
+      }, React)
+    })
   }
 
-  log.debug('Attaching render function')
-  ns.renderFunction = renderFunction
+  return dispose
 
-  log.debug('Forcing components to rerender')
-  updateComponent(id)
-
-  return {
-    dispose: function dispose () {
-      log.debug('Removing render function')
-      delete ns.renderFunction
-
-      log.debug('Forcing components to rerender')
-      updateComponent(id)
-    }
+  function dispose () {
+    _.each(_.keys(wrappers), function (key) {
+      wrappers[key].release()
+    })
+    disposed = true
   }
 }
