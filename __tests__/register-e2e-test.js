@@ -12,7 +12,7 @@ it('e2e', () => {
   )
 
   // claim a wrapper
-  experience('registrar123').register(['wrapper'], (slots, React) => {
+  experience({ owner: 'owner123' }).register(['wrapper'], (slots, React) => {
     expect(mounted.find('.wrapped').length).toEqual(1)
     expect(mounted.find('.replaced').length).toEqual(0)
 

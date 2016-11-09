@@ -15,26 +15,26 @@ describe('getWrapper', () => {
     window.__qubit = undefined
   })
 
-  describe('isUnclaimed', () => {
+  describe('isClaimed', () => {
     it('returns unclaimed correctly', () => {
-      expect(wrapper.isUnclaimed()).toEqual(true)
+      expect(wrapper.isClaimed()).toEqual(false)
     })
     it('returns claimed correctly', () => {
-      window.__qubit.react.components[componentId].claimedBy = 'MEEE'
-      expect(wrapper.isUnclaimed()).toEqual(false)
+      window.__qubit.react.components[componentId].owner = 'MEEE'
+      expect(wrapper.isClaimed()).toEqual(true)
     })
   })
 
   describe('claim', () => {
     it('claims the wrapper if it is free', () => {
       wrapper.claim()
-      expect(window.__qubit.react.components[componentId].claimedBy).not.toBeUndefined()
+      expect(window.__qubit.react.components[componentId].owner).not.toBeUndefined()
     })
     it('does not claim when the wrapper is already claimed', () => {
       getWrapper(registrar2, componentId).claim()
-      const claimee = window.__qubit.react.components[componentId].claimedBy
+      const claimee = window.__qubit.react.components[componentId].owner
       wrapper.claim()
-      expect(window.__qubit.react.components[componentId].claimedBy).toBe(claimee)
+      expect(window.__qubit.react.components[componentId].owner).toBe(claimee)
     })
   })
 
@@ -45,7 +45,7 @@ describe('getWrapper', () => {
       })
       it('does not release the wrapper', () => {
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].claimedBy).not.toEqual(false)
+        expect(window.__qubit.react.components[componentId].owner).not.toEqual(false)
       })
       it('does not remove the renderFunction', () => {
         window.__qubit.react.components[componentId].renderFunction = noop
@@ -65,7 +65,7 @@ describe('getWrapper', () => {
       })
       it('releases the wrapper', () => {
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].claimedBy).toEqual(false)
+        expect(window.__qubit.react.components[componentId].owner).toBeUndefined()
       })
       it('removes the renderFunction', () => {
         window.__qubit.react.components[componentId].renderFunction = noop

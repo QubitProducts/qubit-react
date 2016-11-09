@@ -1,9 +1,11 @@
+var createRegister = require('./createRegister')
+
 module.exports = function (meta) {
-  var registrar = meta && (meta.registrar || meta.experimentId)
-  if (!registrar) {
-    throw new Error('No registrar specified')
+  var owner = meta && (meta.owner || meta.experimentId)
+  if (!owner) {
+    throw new Error('No owner specified')
   }
   return {
-    register: require('./register')(registrar)
+    register: createRegister(owner)
   }
 }

@@ -6,18 +6,18 @@ module.exports = function getWrapper (registrar, id) {
   var ns = namespace.getComponent(id)
 
   return {
-    isUnclaimed: function isUnclaimed () {
-      return !ns.claimedBy
+    isClaimed: function isUnclaimed () {
+      return !!ns.owner
     },
     claim: function () {
-      if (!ns.claimedBy) {
-        ns.claimedBy = registrar
+      if (!ns.owner) {
+        ns.owner = registrar
       }
     },
     release: checkYerPrivilege(function () {
       ns.renderFunction = undefined
       update()
-      ns.claimedBy = false
+      ns.owner = undefined
     }),
     render: checkYerPrivilege(function (fn) {
       ns.renderFunction = fn
@@ -31,7 +31,7 @@ module.exports = function getWrapper (registrar, id) {
 
   function checkYerPrivilege (fn) {
     return function () {
-      if (ns.claimedBy === registrar) {
+      if (ns.owner === registrar) {
         fn.apply(fn, arguments)
         return true
       }

@@ -5,18 +5,18 @@ var log = require('./createLogger')
 var onReactReady = require('./onReactReady')
 var getWrapper = require('./getWrapper')
 
-module.exports = function createRegister (registrar) {
+module.exports = function createRegister (owner) {
   return function register (ids, cb) {
     checkVersion()
 
     var disposed = false
     var wrappers = _.reduce(ids, function (memo, id) {
-      memo[id] = getWrapper(registrar, id)
+      memo[id] = getWrapper(owner, id)
       return memo
     }, {})
 
     var allAvailable = _.every(_.keys(wrappers), function (key) {
-      return wrappers[key].isUnclaimed()
+      return !wrappers[key].isClaimed()
     })
 
     if (allAvailable) {
@@ -65,5 +65,3 @@ module.exports = function createRegister (registrar) {
     }
   }
 }
-
-
