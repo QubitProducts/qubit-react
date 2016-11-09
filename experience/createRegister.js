@@ -1,13 +1,19 @@
 var _ = require('slapdash')
 
-var checkVersion = require('./checkVersion')
+var namespace = require('../lib/namespace')
+var experienceVersion = require('../lib/libraryVersion')
+var validateVersions = require('./validateVersions')
 var log = require('./createLogger')
 var onReactReady = require('./onReactReady')
 var getWrapper = require('./getWrapper')
 
 module.exports = function createRegister (owner) {
   return function register (ids, cb) {
-    checkVersion()
+    var wrapperVersion = namespace.getReact().version
+    if (!validateVersions(experienceVersion, wrapperVersion)) {
+      log.error('Aborting due to error with versions')
+      return
+    }
 
     var disposed = false
     var wrappers = _.reduce(ids, function (memo, id) {
