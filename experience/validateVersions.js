@@ -20,7 +20,7 @@ module.exports = function validateVersions (experienceVersion, wrapperVersion) {
   }
 
   if (semver.getMinor(wrapperVersion) !== semver.getMinor(experienceVersion)) {
-    log.error(`experience and wrapper are on different minor versions`)
+    log.info(`experience and wrapper are on different minor versions`)
   }
 
   return true
