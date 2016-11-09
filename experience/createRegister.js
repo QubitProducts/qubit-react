@@ -12,7 +12,7 @@ module.exports = function createRegister (owner) {
     var wrapperVersion = namespace.getReact().version
     if (!validateVersions(experienceVersion, wrapperVersion)) {
       log.error('Aborting due to error with versions')
-      return
+      return dispose
     }
 
     var disposed = false
@@ -22,7 +22,12 @@ module.exports = function createRegister (owner) {
     }, {})
 
     var allAvailable = _.every(_.keys(wrappers), function (key) {
-      return !wrappers[key].isClaimed()
+      if (wrappers[key].isClaimed()) {
+        log.error(key + ' is already claimed')
+        return false
+      } else {
+        return true
+      }
     })
 
     if (allAvailable) {

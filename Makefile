@@ -1,14 +1,18 @@
-.PHONY: booststrap test test-watch sandbox
+.PHONY: booststrap lint test test-watch sandbox
 
 BIN = ./node_modules/.bin
 
 bootstrap:
 	yarn
 
-test:
+lint:
+	$(BIN)/standard
+	$(BIN)/standard5
+
+test: lint
 	$(BIN)/jest
 
-test-watch:
+test-watch: lint
 	$(BIN)/jest --watchAll
 
 sandbox:
