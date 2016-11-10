@@ -1,9 +1,6 @@
 import validateVersions from '../validateVersions'
 
 describe('validateVersions', () => {
-  it('returns false for invalid experience version', () => {
-    expect(validateVersions('not.a.version', '1.0.0')).toBe(false)
-  })
   it('returns false for invalid wrapper version', () => {
     expect(validateVersions('1.0.0', 'not.a.version')).toBe(false)
   })
