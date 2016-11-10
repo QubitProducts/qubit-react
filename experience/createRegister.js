@@ -22,10 +22,12 @@ module.exports = function createRegister (owner) {
     }, {})
 
     var allAvailable = _.every(_.keys(wrappers), function (key) {
+      log.debug('Checking availability of ' + key)
       if (wrappers[key].isClaimed()) {
         log.error(key + ' is already claimed')
         return false
       } else {
+        log.debug(key + ' is free')
         return true
       }
     })

@@ -2,15 +2,9 @@ var log = require('./createLogger')
 var semver = require('../lib/semver')
 
 module.exports = function validateVersions (experienceVersion, wrapperVersion) {
-  log.info('Checking wrapper version: "' + wrapperVersion + '"')
+  log.debug('Checking wrapper version: "' + wrapperVersion + '"')
   if (!semver.isValid(wrapperVersion)) {
     log.error('Invalid wrapper version')
-    return false
-  }
-
-  log.info('Checking experience version: "' + experienceVersion + '"')
-  if (!semver.isValid(experienceVersion)) {
-    log.error('Invalid experience version')
     return false
   }
 
@@ -20,7 +14,7 @@ module.exports = function validateVersions (experienceVersion, wrapperVersion) {
   }
 
   if (semver.getMinor(wrapperVersion) !== semver.getMinor(experienceVersion)) {
-    log.info('experience and wrapper are on different minor versions')
+    log.warn('experience and wrapper are on different minor versions')
   }
 
   return true
