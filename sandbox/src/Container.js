@@ -1,16 +1,14 @@
-import React from 'react'
+import React, { Component } from 'react'
 
-import UnwrappedComponent from './UnwrappedComponent'
-import WrappedComponent from './WrappedComponent'
+import Header from './Header'
+import Body from './Body'
 
-class Container extends React.Component {
+class Container extends Component {
   render () {
     return (
       <div>
-        <UnwrappedComponent />
-        <WrappedComponent
-          id='wrapped'
-        />
+        <Header />
+        <Body />
       </div>
     )
   }

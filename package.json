@@ -1,10 +1,11 @@
 {
-  "name": "qubit-react-wrapper",
+  "name": "qubit-react",
   "version": "1.0.2",
-  "description": "A wrapper component for use with Qubit Deliver",
-  "main": "QubitReactWrapper.js",
+  "description": "A library for enabling Qubit Experiences on React sites",
+  "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "make test",
+    "prepublish": "./scripts/injectVersion.js"
   },
   "author": "Qubit",
   "license": "MIT",
@@ -28,6 +29,8 @@
     "react": "^0.14.0",
     "react-addons-test-utils": "0.14.0",
     "react-dom": "^0.14.0",
+    "standard": "^8.5.0",
+    "standard5": "^1.1.1",
     "webpack": "^1.13.2",
     "webpack-dev-server": "^1.16.2"
   },
@@ -39,6 +42,13 @@
       "beforeEach",
       "afterEach",
       "jest"
+    ]
+  },
+  "standard5": {
+    "ignore": [
+      "**/__tests__",
+      "sandbox/",
+      "scripts/"
     ]
   }
 }

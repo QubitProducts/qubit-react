@@ -1,6 +1,6 @@
-import exposeReact from '../lib/exposeReact'
+import exposeReact from '../exposeReact'
 
-describe('onReactReady', () => {
+describe('exposeReact', () => {
   afterEach(() => {
     window.__qubit = undefined
   })
@@ -8,13 +8,13 @@ describe('onReactReady', () => {
   it('exposes React to the correct location', () => {
     const fakeReact = {}
     exposeReact(fakeReact)
-    expect(window.__qubit.reactTools.React).toBe(fakeReact)
+    expect(window.__qubit.react.React).toBe(fakeReact)
   })
 
   it('runs all onReactReady handlers', () => {
     const onReactReady = [jest.fn(), jest.fn()]
     window.__qubit = {
-      reactTools: {
+      react: {
         onReactReady: onReactReady
       }
     }
@@ -27,7 +27,7 @@ describe('onReactReady', () => {
     // Not using .toHaveBeenCalledWith because we need === match
     const onReactReady = jest.fn(React => expect(React).toBe(fakeReact))
     window.__qubit = {
-      reactTools: {
+      react: {
         onReactReady: [onReactReady]
       }
     }
@@ -37,17 +37,17 @@ describe('onReactReady', () => {
   it('runs clears onReactReady handlers after running them', () => {
     const onReactReady = [() => {}, () => {}]
     window.__qubit = {
-      reactTools: {
+      react: {
         onReactReady: onReactReady
       }
     }
     exposeReact({})
-    expect(window.__qubit.reactTools.onReactReady).toEqual([])
+    expect(window.__qubit.react.onReactReady).toEqual([])
   })
 
   it('catches errors thrown from onReactReady handlers', () => {
     window.__qubit = {
-      reactTools: {
+      react: {
         onReactReady: [() => { throw new Error('onReactReady error') }]
       }
     }
@@ -63,7 +63,7 @@ describe('onReactReady', () => {
       jest.fn()
     ]
     window.__qubit = {
-      reactTools: {
+      react: {
         onReactReady: onReactReady
       }
     }
