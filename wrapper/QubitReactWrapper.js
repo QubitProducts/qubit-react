@@ -1,8 +1,11 @@
 var React = require('react')
+var ReactDOM = require('react-dom')
 
+var bootstrapWrapper = require('./bootstrapWrapper')
+var callDevtoolsHook = require('./callDevtoolsHook')
 var getComponent = require('../lib/namespace').getComponent
 var createLogger = require('./createLogger')('renderFunction')
-require('./exposeReact')(React)
+require('./exposeReact')(React, ReactDOM)
 require('./exposeVersion')()
 
 var QubitReactWrapper = React.createClass({
@@ -16,18 +19,27 @@ var QubitReactWrapper = React.createClass({
   },
 
   componentWillMount: function () {
-    this.update = this.forceUpdate.bind(this)
+    bootstrapWrapper(this.props.id)
     var ns = this.getNamespace()
-    ns.update = ns.update || []
-    ns.update.push(this.update)
+    ns.instances = ns.instances || []
+    ns.instances.push(this)
+
+    callDevtoolsHook()
+  },
+
+  componentDidUpdate: function () {
+    callDevtoolsHook()
   },
 
   componentWillUnmount: function () {
     var self = this
     var ns = this.getNamespace()
-    ns.update = ns.update.filter(function (fn) {
-      return fn !== self.update
+
+    ns.instances = ns.instances.filter(function (instance) {
+      return instance !== self
     })
+
+    callDevtoolsHook()
   },
 
   render: function () {
