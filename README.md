@@ -1,12 +1,12 @@
 # Qubit React [ ![Codeship Status for qubitdigital/qubit-react-wrapper](https://app.codeship.com/projects/d63db780-5b06-0134-b3eb-4297ec814d8e/status?branch=master)](https://app.codeship.com/projects/173267)
 
-A library for enabling Qubit Experiences on React sites
+Smoothly integrate Qubit Experiences on React websites.
 
-By wrapping a component, Qubit React Wrapper will expose an API to a namespaced window object. This will allow custom render functions to be injected and override how the wrapped component will be rendered.
+Wrap page components using `qubit-react/wrapper` and change their rendering behaviour from within Experiences to provide segment targeting, personalisation and A/B testing.
 
-## Site Implementation
+## Website Implementation
 
-To expose a component for use in Experiences, you will need to simply wrap your component with `qubit-react/wrapper`. For example:
+To expose a component for use in Experiences, wrap the relevant components with `qubit-react/wrapper`.
 
 ```js
 import QubitReact from 'qubit-react/wrapper'
@@ -21,9 +21,13 @@ A unique `id` is required for each wrapped component. It is recommended that all
 
 ## Usage
 
-The included `qubit-react/experience` library is used to interact with the wrapper while working in Qubit Experiences.
+In Qubit Experiences use `qubit-react/experience` to interact with the wrapper.
 
-To initiate the library, the experience meta information needs to be passed in:
+### Activation
+
+#### Setup
+
+First initiate the library by passing in the experience meta information.
 
 ```js
 function experienceActivation (options, cb) {
@@ -31,11 +35,11 @@ function experienceActivation (options, cb) {
 }
 ```
 
-### Claiming wrappers
+#### Claiming Wrapper Ownership
 
-Qubit React uses a concept of wrapper ownership, which means that only a single experience can control the contents of a wrapper at any time. This reduces conflicts between experiences attempting to modify the same component.
+Qubit React has a concept of wrapper ownership. This means that only a single experience can control the contents of a wrapper at any given time. This reduces conflicts between experiences attempting to modify the same component.
 
-In order to take ownership of a wrapper, we use the `experience.register` function
+In order to take ownership of a wrapper during the experience activation phase, use the `experience.register` function. You can claim multiple wrappers by passing in multiple wrapper IDs to register.
 
 ```js
 function experienceActivation (options, cb) {
@@ -46,27 +50,38 @@ function experienceActivation (options, cb) {
   })
 }
 ```
-### Releasing ownership
 
-There are two ways to release ownership of wrappers, both function calls are identical but obtained in different ways to allow them to more easily suit the experience workflow.
+#### Releasing Wrapper Ownership
 
 ```js
 function experienceActivation (options, cb) {
   var experience = require('qubit-react/experience')(options.meta)
 
-  var releaseMethod1, releaseMethod2
-
-  var releaseMethod1 = experience.register(['header'], function (slots, React) {
-    releaseMethod2 = slots.dipose
+  var dispose = experience.register(['header'], function (slots, React) {    
+    // use state to pass the slots and React to execution
+    options.state.set('slots', slots)
+    options.state.set('React', React)
+    cb()
   })
 
-  // releaseMethod1 === releaseMethod2
+  return {
+    remove: function () {
+      // important to release the ownership of the wrappers
+      // so that other experiences on other virtual pageviews
+      // can claim them.
+      dispose()
+    }
+  }
 }
 ```
 
-Releasing the wrappers will remove all render functions attached and rerender the wrappers.
+Calling dispose will render the original content of the wrapped component and release the ownership so that other experiences can claim it.
 
-### Rendering custom components
+### Execution
+
+#### Render Content
+
+Now that we are finally in execution phase, let's render some custom content into our wrapped component.
 
 ```js
 function experienceExecution (options) {
@@ -82,36 +97,43 @@ function experienceExecution (options) {
   slots.render('header', function (props) {
     return <NewHeader />
   })
+  
+  return {
+    remove: function () {
+      slots.dispose()
+    }
+  }
 }
 ```
 
-### And unrendering...
+### Unrender Content
+
+Sometimes, it might be useful to render the original content.
 
 ```js
 function experienceExecution (options) {
   var React = options.state.get('React')
   var slots = options.state.get('slots')
-
-  class NewHeader extends React.Component {
-    render () {
-      return <h2>NEW HEADER</h2>
-    }
-  }
-
-  slots.render('header', function (props) {
-    return <NewHeader />
-  })
+  
+  // ...
 
   setTimeout(() => {
     slots.unrender('header')
   }, 5000)
+  
+  return {
+    remove: function () {
+      slots.dispose()
+    }
+  }
 }
 ```
 
 
-### Full example
+### Real World Example
 
-**activation:**
+#### Activation
+
 ```js
 function experienceActivation (options, cb) {
   var experience = require('qubit-react/experience')(options.meta)
@@ -137,7 +159,8 @@ function experienceActivation (options, cb) {
 }
 ```
 
-**execution:**
+#### Execution
+
 ```js
 function experienceExecution (options) {
   var saleEnds = options.state.get('saleEnds')
@@ -184,15 +207,23 @@ function experienceExecution (options) {
 
 ## Debugging
 
-QubitReact uses [driftwood][] for logging. The API is exported to `window.__qubit.logger`, run `window.__qubit.logger.enable()` to turn on logs. Visit [driftwood][] to see the full API documentation.
+QubitReact uses [driftwood][] for logging. Enable it via Developer Console.
 
-### More low level stuff...
+```js
+window.__qubit.logger.enable({'qubit-react:*': '*'}, {persist: true}) // enable qubit-react logs
+window.__qubit.logger.enable({'*': '*'}, {persist: true}) // enable all logs
+window.__qubit.logger.disable() // disable logs
+```
 
-This section provides more technical details on how the wrapper operates.
+Visit [driftwood][] to see the full API documentation.
 
-**Determining render function**
+### Behind the Scenes
 
-When a wrapper is first mounted, it will create an object under `window.__qubit.react.components[id]`, where the `id` is unique to the wrapper. There are two things on the object we care about:
+This section provides technical details on how the wrapper works.
+
+#### Determining render function
+
+When a wrapper is first mounted, it creates an object under `window.__qubit.react.components[id]`, where the `id` is unique to the wrapper. There are two things on the object we care about:
 
 ```js
 {
@@ -201,7 +232,10 @@ When a wrapper is first mounted, it will create an object under `window.__qubit.
 }
 ```
 
-Simply put, if the `renderFunction` exists, it will be used for the wrapper. Since the wrapper will not know when this is attached, the `forceUpdate` functions on the instances should be called after attaching a new render function to ensure the relevant parts of the UI are rerendered.
+
+Simply put, if the `renderFunction` exists, it will be used by the wrapper. Since the wrapper will not know when this is attached, the `forceUpdate` functions should be called after attaching a new render function to ensure the relevant parts of the UI is rerendered.
+
+This is what the `qubit-react/experience` does behind the scenes:
 
 ```js
 // First ensure the object path exists and create it if it doesn't
@@ -220,31 +254,6 @@ window.__qubit.react.components.header.renderFunction = function (props, React) 
 window.__qubit.react.components.header.instances.forEach((instance) => instance.forceUpdate())
 ```
 
-**Exposing React and ReactDOM**
-
-The wrapper will also expose React and ReactDOM to `window.__qubit.react.React` and `window.__qubit.react.ReactDOM` respectively. In the case that this is not yet available when your code runs (e.g. when the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.react.onReactReady` array. These will be called when React is first exposed.
-
-```js
-if (window.__qubit && window.__qubit.react && window.__qubit.react.React && window.__qubit.react.ReactDOM) {
-  onReactReady(window.__qubit.react.React, window.__qubit.react.ReactDOM)
-} else {
-  // Ensure the object path exists and create it if it doesn't
-  window.__qubit = window.__qubit || {}
-  window.__qubit.react = window.__qubit.react || {}
-
-  // Initiate the array if it's not there already
-  window.__qubit.react.onReactReady = window.__qubit.react.onReactReady || []
-
-  // Push your callback into the array
-  window.__qubit.react.onReactReady.push(onReactReady)
-}
-
-function onReactReady (React, ReactDOM) {
-  // Run your code
-  var CustomComponent = React.createClass({ ... })
-}
-```
-
 ## Development
 
 ### Setup
@@ -252,8 +261,8 @@ function onReactReady (React, ReactDOM) {
 This project uses [yarn][] for dependency management, to get up and running
 
 ```
-npm i -g yarn
-make bootstrap
+$ npm i -g yarn
+$ make bootstrap
 ```
 
 ### Running tests
@@ -265,9 +274,7 @@ Tests are implemented with [jest][]:
 
 ### Sandbox
 
-Simulates an environment to play around with the wrapper and experience utility library.
-`make sandbox` and then go to localhost:8080 to see the wrapper in action
-
+Simulates an environment to play around with the wrapper and experience utility library. Run `make sandbox` and then go to localhost:8080 to see the wrapper in action.
 
 ## Want to work on this for your day job?
 
