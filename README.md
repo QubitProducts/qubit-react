@@ -57,7 +57,7 @@ function experienceActivation (options, cb) {
 function experienceActivation (options, cb) {
   var experience = require('qubit-react/experience')(options.meta)
 
-  var dispose = experience.register(['header'], function (slots, React) {    
+  var release = experience.register(['header'], function (slots, React) {    
     // use state to pass the slots and React to execution
     options.state.set('slots', slots)
     options.state.set('React', React)
@@ -69,13 +69,13 @@ function experienceActivation (options, cb) {
       // important to release the ownership of the wrappers
       // so that other experiences on other virtual pageviews
       // can claim them.
-      dispose()
+      release()
     }
   }
 }
 ```
 
-Calling dispose will render the original content of the wrapped component and release the ownership so that other experiences can claim it.
+Calling `release` will render the original content of the wrapped component and release the ownership so that other experiences can claim it.
 
 ### Execution
 
@@ -100,15 +100,15 @@ function experienceExecution (options) {
   
   return {
     remove: function () {
-      slots.dispose()
+      slots.release()
     }
   }
 }
 ```
 
-### Unrender Content
+### Rendering Original Content
 
-Sometimes, it might be useful to render the original content.
+Sometimes, it might be useful to render the original content temporarily. For example, if you show the original content, but then want to render something custom again, you could do this:
 
 ```js
 function experienceExecution (options) {
@@ -118,17 +118,27 @@ function experienceExecution (options) {
   // ...
 
   setTimeout(() => {
-    slots.unrender('header')
+    // renders original content
+    slots.render('header', function (props) {
+      return props.children
+    })
+    setTimeout(() => {
+      // renders new content again
+      slots.render('header', function (props) {
+        return <NewContent />
+      })
+    }, 5000)
   }, 5000)
   
   return {
     remove: function () {
-      slots.dispose()
+      slots.release()
     }
   }
 }
 ```
 
+It's different from calling `slots.release()`, because release is final and the wrapper can't be used again in this experience. It's really meant for cleanup between virtual page views.
 
 ### Real World Example
 
@@ -199,7 +209,7 @@ function experienceExecution (options) {
   })
 
   return {
-    remove: slots.dispose
+    remove: slots.release
   }
 }
 
