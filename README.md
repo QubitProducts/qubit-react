@@ -197,11 +197,11 @@ When a wrapper is first mounted, it will create an object under `window.__qubit.
 ```js
 {
   renderFunction: (props, React) => {}, // If this is present, it will be used as the render function for the wrapper
-  update: [] // Proxies of the `forceUpdate` function for each instance of the wrapper that is mounted
+  instances: [] // The instances of the mounted Qubit React wrappers
 }
 ```
 
-Simply put, if the `renderFunction` exists, it will be used for the wrapper. Since the wrapper will not know when this is attached, the `update` functions should be called after attaching a new render function to ensure the relevant parts of the UI is rerendered.
+Simply put, if the `renderFunction` exists, it will be used for the wrapper. Since the wrapper will not know when this is attached, the `forceUpdate` functions on the instances should be called after attaching a new render function to ensure the relevant parts of the UI are rerendered.
 
 ```js
 // First ensure the object path exists and create it if it doesn't
@@ -217,16 +217,16 @@ window.__qubit.react.components.header.renderFunction = function (props, React) 
 }
 
 // Update all the components
-window.__qubit.react.components.header.update.forEach((update) => update())
+window.__qubit.react.components.header.instances.forEach((instance) => instance.forceUpdate())
 ```
 
-**Exposing React**
+**Exposing React and ReactDOM**
 
-The wrapper will also expose React to `window.__qubit.react.React`. In the case that this is not yet available when your code runs (e.g. when the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.react.onReactReady` array. These will be called when React is first exposed.
+The wrapper will also expose React and ReactDOM to `window.__qubit.react.React` and `window.__qubit.react.ReactDOM` respectively. In the case that this is not yet available when your code runs (e.g. when the first instance of the wrapper has not yet been rendered), you can add a callback to the `window.__qubit.react.onReactReady` array. These will be called when React is first exposed.
 
 ```js
-if (window.__qubit && window.__qubit.react && window.__qubit.react.React) {
-  onReactReady(window.__qubit.react.React)
+if (window.__qubit && window.__qubit.react && window.__qubit.react.React && window.__qubit.react.ReactDOM) {
+  onReactReady(window.__qubit.react.React, window.__qubit.react.ReactDOM)
 } else {
   // Ensure the object path exists and create it if it doesn't
   window.__qubit = window.__qubit || {}
@@ -239,7 +239,7 @@ if (window.__qubit && window.__qubit.react && window.__qubit.react.React) {
   window.__qubit.react.onReactReady.push(onReactReady)
 }
 
-function onReactReady (React) {
+function onReactReady (React, ReactDOM) {
   // Run your code
   var CustomComponent = React.createClass({ ... })
 }
@@ -257,6 +257,8 @@ make bootstrap
 ```
 
 ### Running tests
+
+Tests are implemented with [jest][]:
 
 - `make test` to run tests
 - `make test-watch` to run tests in watch mode
@@ -276,6 +278,7 @@ We’re currently looking to grow our team, so if you’re a JavaScript engineer
 Find more details on our [Engineering site][]. Don’t have an up to date CV? Just link us your Github profile! Better yet, send us a pull request that improves this project.
 
 [yarn]: https://github.com/yarnpkg/yarn
+[jest]: https://facebook.github.io/jest/
 [driftwood]: https://github.com/QubitProducts/driftwood
 [Qubit]: http://www.qubit.com
 [Engineering site]: https://eng.qubit.com

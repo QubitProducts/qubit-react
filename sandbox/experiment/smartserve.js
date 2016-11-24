@@ -1,20 +1,23 @@
-import {
-  activation,
-  execution
-} from './experience'
+import * as experience1 from './experience'
+import * as experience2 from './experience2'
 
-var state = {}
+evaluateExperience('exp1', experience1)
+evaluateExperience('exp2', experience2)
 
-var options = {
-  meta: {
-    experimentId: 47147
-  },
-  state: {
-    set: (key, value) => { state[key] = value },
-    get: (key) => { return state[key] }
+function evaluateExperience (name, experience) {
+  const state = {}
+
+  const options = {
+    meta: {
+      experimentId: name
+    },
+    state: {
+      set: (key, value) => { state[key] = value },
+      get: (key) => { return state[key] }
+    }
   }
-}
 
-activation(options, () => {
-  execution(options)
-})
+  experience.activation(options, () => {
+    experience.execution(options)
+  })
+}

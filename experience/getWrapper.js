@@ -40,8 +40,8 @@ module.exports = function getWrapper (registrar, id) {
   }
 
   function update () {
-    if (_.isArray(ns.update)) {
-      _.each(ns.update, function (u) { u() })
+    if (_.isArray(ns.instances)) {
+      _.each(ns.instances, function (i) { i.forceUpdate() })
     }
   }
 }

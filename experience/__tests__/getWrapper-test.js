@@ -54,7 +54,7 @@ describe('getWrapper', () => {
       })
       it('does not call the update funtions', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.release()
         expect(forceUpdate).not.toHaveBeenCalled()
       })
@@ -72,9 +72,9 @@ describe('getWrapper', () => {
         wrapper.release()
         expect(window.__qubit.react.components[componentId].renderFunction).toBeUndefined()
       })
-      it('calls the update funtions', () => {
+      it('calls the update functions', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.release()
         expect(forceUpdate).toHaveBeenCalled()
       })
@@ -89,7 +89,7 @@ describe('getWrapper', () => {
       })
       it('does not call update', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.render(noop)
         expect(forceUpdate).not.toHaveBeenCalled()
       })
@@ -107,7 +107,7 @@ describe('getWrapper', () => {
       })
       it('calls update', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.render(noop)
         expect(forceUpdate).toHaveBeenCalled()
       })
@@ -126,7 +126,7 @@ describe('getWrapper', () => {
       })
       it('does not call update', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.unrender(noop)
         expect(forceUpdate).not.toHaveBeenCalled()
       })
@@ -145,7 +145,7 @@ describe('getWrapper', () => {
       })
       it('calls update', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].update = [forceUpdate]
+        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
         wrapper.unrender(noop)
         expect(forceUpdate).toHaveBeenCalled()
       })
