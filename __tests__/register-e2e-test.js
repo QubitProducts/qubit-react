@@ -31,7 +31,7 @@ it('e2e', () => {
     expect(mounted.find('.anotherThing').length).toEqual(0)
 
     slots.render('wrapper', () => { return <div className='replaced' /> })
-    slots.dispose()
+    slots.release()
     expect(mounted.find('.wrapped').length).toEqual(1)
     expect(mounted.find('.replaced').length).toEqual(0)
     expect(mounted.find('.anotherThing').length).toEqual(0)

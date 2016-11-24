@@ -12,10 +12,10 @@ module.exports = function createRegister (owner) {
     var wrapperVersion = namespace.getReact().version
     if (!validateVersions(experienceVersion, wrapperVersion)) {
       log.error('Aborting due to error with versions')
-      return dispose
+      return release
     }
 
-    var disposed = false
+    var released = false
     var wrappers = _.reduce(ids, function (memo, id) {
       memo[id] = getWrapper(owner, id)
       return memo
@@ -40,7 +40,7 @@ module.exports = function createRegister (owner) {
       onReactReady(function (React) {
         cb({
           render: function (id, fn) {
-            if (disposed) return
+            if (released) return
 
             if (!wrappers[id]) {
               log(id).warn('Slot not found')
@@ -52,7 +52,7 @@ module.exports = function createRegister (owner) {
             }
           },
           unrender: function (id) {
-            if (disposed) return
+            if (released) return
 
             if (!wrappers[id]) {
               log(id).warn('Slot not found')
@@ -63,18 +63,18 @@ module.exports = function createRegister (owner) {
               log(id).error('Failed to unrender ' + id)
             }
           },
-          dispose: dispose
+          release: release
         }, React)
       })
     }
 
-    return dispose
+    return release
 
-    function dispose () {
+    function release () {
       _.each(_.keys(wrappers), function (key) {
         wrappers[key].release()
       })
-      disposed = true
+      released = true
     }
   }
 }
