@@ -22,10 +22,6 @@ module.exports = function getWrapper (registrar, id) {
     render: checkYerPrivilege(function (fn) {
       ns.renderFunction = fn
       update()
-    }),
-    unrender: checkYerPrivilege(function () {
-      ns.renderFunction = undefined
-      update()
     })
   }
 

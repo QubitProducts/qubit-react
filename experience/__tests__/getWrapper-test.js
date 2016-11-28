@@ -116,42 +116,4 @@ describe('getWrapper', () => {
       })
     })
   })
-
-  describe('unrender', () => {
-    describe('if not claimed by the instance', () => {
-      it('does not set the render function', () => {
-        window.__qubit.react.components[componentId].renderFunction = noop
-        wrapper.unrender()
-        expect(window.__qubit.react.components[componentId].renderFunction).not.toBeUndefined()
-      })
-      it('does not call update', () => {
-        const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
-        wrapper.unrender(noop)
-        expect(forceUpdate).not.toHaveBeenCalled()
-      })
-      it('returns false', () => {
-        expect(wrapper.unrender(noop)).toEqual(false)
-      })
-    })
-    describe('if claimed by the instance', () => {
-      beforeEach(() => {
-        wrapper.claim()
-      })
-      it('sets the render function', () => {
-        window.__qubit.react.components[componentId].renderFunction = noop
-        wrapper.unrender()
-        expect(window.__qubit.react.components[componentId].renderFunction).toBeUndefined()
-      })
-      it('calls update', () => {
-        const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{forceUpdate}]
-        wrapper.unrender(noop)
-        expect(forceUpdate).toHaveBeenCalled()
-      })
-      it('returns true', () => {
-        expect(wrapper.unrender(noop)).toEqual(true)
-      })
-    })
-  })
 })

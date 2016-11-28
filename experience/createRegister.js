@@ -51,18 +51,6 @@ module.exports = function createRegister (owner) {
               log(id).error('Failed to render to ' + id)
             }
           },
-          unrender: function (id) {
-            if (released) return
-
-            if (!wrappers[id]) {
-              log(id).warn('Slot not found')
-              return
-            }
-            var success = wrappers[id].unrender()
-            if (!success) {
-              log(id).error('Failed to unrender ' + id)
-            }
-          },
           release: release
         }, React)
       })
