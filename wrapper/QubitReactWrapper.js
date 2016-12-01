@@ -58,10 +58,8 @@ var QubitReactWrapper = React.createClass({
   renderWithOverride: function () {
     var renderFunction = this.getNamespace().renderFunction
     var result = renderFunction(this.props, React)
-    if (typeof result === 'string') {
-      return React.createElement('div', {
-        dangerouslySetInnerHTML: { __html: result }
-      })
+    if (!React.isValidElement(result)) {
+      throw new Error('Render function did not return a valid React element')
     } else {
       return result
     }
