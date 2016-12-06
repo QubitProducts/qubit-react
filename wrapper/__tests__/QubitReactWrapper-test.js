@@ -53,7 +53,7 @@ describe('when there is a handler', () => {
       react: {
         components: {
           fooWrapper: {
-            handler: handler
+            renderFunction: handler
           }
         }
       }
@@ -85,7 +85,37 @@ describe('when the handler throws an error', () => {
       react: {
         components: {
           fooWrapper: {
-            handler: handler
+            renderFunction: handler
+          }
+        }
+      }
+    }
+    component = shallow(
+      <QubitReactWrapper id='fooWrapper'>
+        <h2 className='foo'>Foo</h2>
+      </QubitReactWrapper>
+    )
+  })
+  afterEach(() => {
+    window.__qubit = undefined
+  })
+  it('renders the children', () => {
+    expect(component.find('.foo').length).toBe(1)
+  })
+})
+
+describe('when the handler does not return a React element', () => {
+  let handler
+  let component
+  beforeEach(() => {
+    handler = jest.fn((props, React) => {
+      return 'bad thing'
+    })
+    window.__qubit = {
+      react: {
+        components: {
+          fooWrapper: {
+            renderFunction: handler
           }
         }
       }
