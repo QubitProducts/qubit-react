@@ -54,7 +54,6 @@ export function execution (options) {
   })
 
   return {
-    remove: slots.dispose
+    remove: slots.release
   }
 }
-
