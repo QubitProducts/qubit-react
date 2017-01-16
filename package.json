@@ -14,8 +14,8 @@
   "author": "Qubit",
   "license": "MIT",
   "peerDependencies": {
-    "react": "*",
-    "react-dom": "*"
+    "react": ">=0.14.x <=15.x",
+    "react-dom": ">=0.14.x <=15.x"
   },
   "dependencies": {
     "driftwood": "^1.1.6",
@@ -31,9 +31,9 @@
     "babel-preset-react": "^6.16.0",
     "enzyme": "^2.5.1",
     "jest": "^16.0.1",
-    "react": "^0.14.0",
-    "react-addons-test-utils": "0.14.0",
-    "react-dom": "^0.14.0",
+    "react": "^15.0.0",
+    "react-addons-test-utils": "^15.0.0",
+    "react-dom": "^15.0.0",
     "standard": "^8.5.0",
     "standard5": "^1.1.1",
     "webpack": "^1.13.2",
