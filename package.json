@@ -14,8 +14,8 @@
   "author": "Qubit",
   "license": "MIT",
   "peerDependencies": {
-    "react": "^0.14.0",
-    "react-dom": "^0.14.0"
+    "react": "*",
+    "react-dom": "*"
   },
   "dependencies": {
     "driftwood": "^1.1.6",
