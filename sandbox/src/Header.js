@@ -38,7 +38,7 @@ class Header extends Component {
     const out = []
     for (let i = 0; i < this.state.subtitles; i++) {
       out.push(
-        <QubitReact id='header-subtitle-text'>
+        <QubitReact id='header-subtitle-text' key={i}>
           <span>
             for all your... travel needs
           </span>

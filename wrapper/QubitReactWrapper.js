@@ -1,5 +1,7 @@
 var React = require('react')
 var ReactDOM = require('react-dom')
+var PropTypes = require('prop-types')
+var createReactClass = require('create-react-class')
 
 var bootstrapWrapper = require('./bootstrapWrapper')
 var callDevtoolsHook = require('./callDevtoolsHook')
@@ -8,10 +10,10 @@ var createLogger = require('./createLogger')('renderFunction')
 require('./exposeReact')(React, ReactDOM)
 require('./exposeVersion')()
 
-var QubitReactWrapper = React.createClass({
+var QubitReactWrapper = createReactClass({
   propTypes: {
-    id: React.PropTypes.string.isRequired,
-    children: React.PropTypes.node
+    id: PropTypes.string.isRequired,
+    children: PropTypes.node
   },
 
   getNamespace: function () {
