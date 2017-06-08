@@ -37,9 +37,11 @@ var QubitReactWrapper = createReactClass({
     var self = this
     var ns = this.getNamespace()
 
-    ns.instances = ns.instances.filter(function (instance) {
-      return instance !== self
-    })
+    if (ns.instances) {
+      ns.instances = ns.instances.filter(function (instance) {
+        return instance !== self
+      })
+    }
 
     callDevtoolsHook()
   },
