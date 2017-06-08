@@ -13,4 +13,7 @@ describe('validateVersions', () => {
   it('returns true for mismatched patch versions', () => {
     expect(validateVersions('1.0.0', '1.0.1')).toBe(true)
   })
+  it('returns true when wrapper version is undefined', () => {
+    expect(validateVersions('1.0.0', undefined)).toBe(true)
+  })
 })
