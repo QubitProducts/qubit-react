@@ -3,6 +3,12 @@ var semver = require('../lib/semver')
 
 module.exports = function validateVersions (experienceVersion, wrapperVersion) {
   log.debug('Checking wrapper version: "' + wrapperVersion + '"')
+
+  if (typeof wrapperVersion === 'undefined') {
+    log.warn('Cannot find wrapper version')
+    return true
+  }
+
   if (!semver.isValid(wrapperVersion)) {
     log.error('Invalid wrapper version')
     return false
