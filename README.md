@@ -278,7 +278,7 @@ The other way is to drop a cookie in your server side or client side code. The c
 document.cookie = 'qb_opts=' + encodeURIComponent(JSON.stringify({"experiences":[-1]})) + "; path=/"
 ```
 
-This forces Qubit Experiences to bypass the regular activation flow and shortcuts to activating experience with variation master id 0, which doesn't exist and therefore nothing executes keeping your testing environment clear of Experiences.
+The `experiences` option is typically used to force execution of a specific Qubit Experience. Specifying -1 signals that nothing should be executed, which keeps your testing environment clear of Experiences.
 
 ## Development
 
