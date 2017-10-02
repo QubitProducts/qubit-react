@@ -266,7 +266,9 @@ window.__qubit.react.components.header.instances.forEach((instance) => instance.
 
 ## FAQ
 
-**Is it possible to disable Qubit Experiences in a testing environment?** Yes. If you're not loading Qubit's `smartserve.js` script in your testing environment, Qubit React wrappers become a transparent pass through and should not affect your tests. If you're running an e2e testing environment, you might want to take extra steps to ensure that Qubit Experiences don't alter your wrapped components in unexpected ways.
+#### Is it possible to disable Qubit Experiences in a testing environment?
+
+Yes. If you're not loading Qubit's `smartserve.js` script in your testing environment, Qubit React wrappers become a transparent pass through and should not affect your tests. If you're running an e2e testing environment, you might want to take extra steps to ensure that Qubit Experiences don't alter your wrapped components in unexpected ways.
 
 There are 2 ways to achieve this.
 
