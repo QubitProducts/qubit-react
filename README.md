@@ -268,13 +268,13 @@ window.__qubit.react.components.header.instances.forEach((instance) => instance.
 
 #### Is it possible to disable Qubit Experiences in a testing environment?
 
-Yes. If you're not loading Qubit's `smartserve.js` script in your testing environment, Qubit React wrappers become a transparent pass through and should not affect your tests. If you're running an e2e testing environment, you might want to take extra steps to ensure that Qubit Experiences don't alter your wrapped components in unexpected ways.
+Yes. If you're already not loading Qubit's `smartserve.js` script in your testing environment then this shouldn't be an issue. Qubit React wrappers are a transparent noop pass through in that case and should not affect your tests. 
 
-There are 2 ways to achieve this.
+If you're running an e2e testing environment and loading `smartserve.js` script, you might want to take extra steps to ensure that Qubit Experiences don't alter your wrapped components in unexpected ways. There are 2 ways to achieve this.
 
-One is to append query parameters to your URL: `?qb_opts=remember&qb_experiences=-1`. This also drops a cookie which persists this setting for the rest of the session.
+Append the following query parameters to your URL `?qb_opts=remember&qb_experiences=-1`. This drops a cookie which persists the setting for the rest of the session.
 
-The other way is to drop a cookie in your server side or client side code. The cookie key is `qb_opts` and value is `%7B%22experiences%22%3A%5B0%5D%7D`. Here's example JavaScript that drops the cookie:
+Alternatively, drop a cookie in your server side or client side code. The cookie key is `qb_opts` and value is `%7B%22experiences%22%3A%5B-1%5D%7D`. Here's example JavaScript that drops the cookie:
 
 ```js
 document.cookie = 'qb_opts=' + encodeURIComponent(JSON.stringify({"experiences":[-1]})) + "; path=/"
