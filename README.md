@@ -264,6 +264,22 @@ window.__qubit.react.components.header.renderFunction = function (props, React) 
 window.__qubit.react.components.header.instances.forEach((instance) => instance.forceUpdate())
 ```
 
+## FAQ
+
+**Is it possible to disable Qubit Experiences in a testing environment?** Yes. If you're not loading Qubit's `smartserve.js` script in your testing environment, Qubit React wrappers become a transparent pass through and should not affect your tests. If you're running an e2e testing environment, you might want to take extra steps to ensure that Qubit Experiences don't alter your wrapped components in unexpected ways.
+
+There are 2 ways to achieve this.
+
+One is to append query parameters to your URL: `?qb_opts=remember&qb_experiences=-1`. This also drops a cookie which persists this setting for the rest of the session.
+
+The other way is to drop a cookie in your server side or client side code. The cookie key is `qb_opts` and value is `%7B%22experiences%22%3A%5B0%5D%7D`. Here's example JavaScript that drops the cookie:
+
+```js
+document.cookie = 'qb_opts=' + encodeURIComponent(JSON.stringify({"experiences":[-1]})) + "; path=/"
+```
+
+This forces Qubit Experiences to bypass the regular activation flow and shortcuts to activating experience with variation master id 0, which doesn't exist and therefore nothing executes keeping your testing environment clear of Experiences.
+
 ## Development
 
 ### Setup
