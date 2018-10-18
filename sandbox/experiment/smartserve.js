@@ -3,7 +3,7 @@ import * as experience2 from './experience2'
 
 import driftwood from 'driftwood'
 
-driftwood.enable({'*': '*'}, {persist: true})
+driftwood.enable({ '*': '*' }, { persist: true })
 
 evaluateExperience('exp1', experience1)
 evaluateExperience('exp2', experience2)
