@@ -20,7 +20,7 @@ var QubitReactWrapper = createReactClass({
     return getComponent(this.props.id)
   },
 
-  componentWillMount: function () {
+  componentDidMount: function () {
     bootstrapWrapper(this.props.id)
     var ns = this.getNamespace()
     ns.instances = ns.instances || []
