@@ -1,5 +1,6 @@
 var path = require('path')
 module.exports = {
+  mode: 'development',
   entry: {
     bundle: ['./src/app.js'],
     smartserve: ['./experiment/smartserve.js']
@@ -10,7 +11,7 @@ module.exports = {
     filename: '[name].js'
   },
   module: {
-    loaders: [
+    rules: [
       { test: /\.js$/, exclude: /node_modules/, loader: 'babel-loader' }
     ]
   }
