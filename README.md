@@ -5,6 +5,7 @@ Smoothly integrate Qubit Experiences on React websites.
 Wrap page components using `qubit-react/wrapper` and change their rendering behaviour from within Experiences to provide segment targeting, personalisation and A/B testing.
 
 ## Website Implementation
+_This section refers to the changes that you need to make to your website codebase._
 
 To expose a component for use in Experiences, wrap the relevant components with `qubit-react/wrapper`.
 
@@ -20,6 +21,7 @@ import QubitReact from 'qubit-react/wrapper'
 A unique `id` is required for each wrapped component. It is recommended that all props passed to the wrapped component are also passed to the wrapper. All the props passed to the wrapper component will be forwarded to your custom render function.
 
 ## Usage
+_This section refers to the code that you write inside Qubit's platform._
 
 In Qubit Experiences use `qubit-react/experience` to interact with the wrapper.
 
