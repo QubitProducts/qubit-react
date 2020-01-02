@@ -1,33 +1,20 @@
 export function activation (options, cb) {
-  window.initiate = require('../../experience')
-  var experience = require('../../experience')(options.meta)
   window.opts = options
 
-  var release = experience.register([
-    'promo-banner-text'
-  ], function (slots, React) {
-    options.state.set('slots', slots)
-    options.state.set('React', React)
-    cb()
-  })
-
-  return {
-    remove: release
-  }
+  options.react.register(['promo-banner-text']).then(cb)
 }
 
 export function execution (options) {
-  var saleEnds = Date.now() + (10 * 60 * 1000)
+  var React = options.react.getReact()
 
-  var React = options.state.get('React')
-  var slots = options.state.get('slots')
+  var saleEnds = Date.now() + (10 * 60 * 1000)
 
   class Countdown extends React.Component {
     componentWillMount () {
       const { endDate } = this.props
-      this.state = {
+      this.setState({
         remaining: endDate - Date.now()
-      }
+      })
       this.interval = setInterval(() => {
         const remaining = endDate - Date.now()
         this.setState({ remaining: endDate - Date.now() })
@@ -49,11 +36,7 @@ export function execution (options) {
     }
   }
 
-  slots.render('promo-banner-text', function (props) {
+  options.react.render('promo-banner-text', function (props) {
     return <Countdown endDate={saleEnds} />
   })
-
-  return {
-    remove: slots.release
-  }
 }

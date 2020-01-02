@@ -1,4 +1,5 @@
 var _ = require('slapdash')
+var all = require('sync-p/all')
 
 var namespace = require('../lib/namespace')
 var experienceVersion = require('../lib/libraryVersion')
@@ -11,8 +12,7 @@ module.exports = function createRegister (owner) {
   return function register (ids, cb) {
     var wrapperVersion = namespace.getReact().version
     if (!validateVersions(experienceVersion, wrapperVersion)) {
-      log.error('Aborting due to error with versions')
-      return release
+      boom('Aborting due to error with versions')
     }
 
     var released = false
@@ -21,48 +21,46 @@ module.exports = function createRegister (owner) {
       return memo
     }, {})
 
-    var allAvailable = _.every(_.keys(wrappers), function (key) {
-      log.debug('Checking availability of ' + key)
-      if (wrappers[key].isClaimed()) {
-        log.error(key + ' is already claimed')
-        return false
-      } else {
-        log.debug(key + ' is free')
-        return true
-      }
+    var registrations = _.map(_.keys(wrappers), function (key) {
+      log.debug('Registering ' + key)
+      return wrappers[key].register()
     })
 
-    if (allAvailable) {
-      _.each(_.keys(wrappers), function (key) {
-        wrappers[key].claim()
-      })
-
-      onReactReady(function (React) {
+    all(registrations)
+      .then(onReactReady)
+      .then(function (React) {
         cb({
-          render: function (id, fn) {
-            if (released) return
-
-            if (!wrappers[id]) {
-              log(id).warn('Slot not found')
-              return
-            }
-            var success = wrappers[id].render(fn)
-            if (!success) {
-              log(id).error('Failed to render to ' + id)
-            }
-          },
+          render: render,
           release: release
         }, React)
       })
-    }
 
     return release
 
-    function release () {
+    function render (id, fn) {
+      if (released) return
+      var wrapper = wrappers[id]
+
+      if (!wrapper) {
+        boom('Slot "' + id + '" not found, did you forget to register it?')
+      }
+      if (!wrapper.canClaim()) {
+        boom('Cannot render into slot "' + id + '", it is already claimed')
+      }
+      wrapper.render(fn)
+    }
+
+    function release (toRelease) {
+      if (released) return
       _.each(_.keys(wrappers), function (key) {
         wrappers[key].release()
       })
       released = true
+    }
+
+    function boom (msg) {
+      log.error(msg)
+      throw new Error(msg)
     }
   }
 }
