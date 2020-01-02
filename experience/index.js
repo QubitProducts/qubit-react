@@ -1,5 +1,6 @@
 var Promise = require('sync-p')
 var createRegister = require('./createRegister')
+var log = require('./createLogger')
 
 module.exports = function (meta) {
   var owner = meta && (meta.owner || meta.experimentId)
@@ -7,6 +8,7 @@ module.exports = function (meta) {
     throw new Error('No owner specified')
   }
 
+  var hasLoggedDeprecation = false
   var register = createRegister(owner)
   var release = null
   var render = null
@@ -36,6 +38,10 @@ module.exports = function (meta) {
       }
 
       if (cb) {
+        if (!hasLoggedDeprecation) {
+          log.warn('You are using the deprecated callback-based registration method in experience ' + owner + '. Go to https://docs.qubit.com to find out how and why to upgrade to the new promise-based approach.')
+          hasLoggedDeprecation = true
+        }
         release = register(ids, cb)
         return release
       } else {
