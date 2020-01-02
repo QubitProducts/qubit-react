@@ -38,7 +38,7 @@ it('e2e - modern', async () => {
   expect(mounted.find('.anotherThing').length).toEqual(0)
 })
 
-it.skip('e2e - legacy', async () => {
+it('e2e - legacy', async () => {
   const React = require('react')
   const QubitReactWrapper = require('../wrapper')
   const mounted = mount(
@@ -48,24 +48,27 @@ it.skip('e2e - legacy', async () => {
   )
 
   // claim a wrapper
-  await experience({ owner: 'owner123' }).register(['wrapper'], async (slots, React) => {
-    expect(mounted.find('.wrapped').length).toEqual(1)
-    expect(mounted.find('.replaced').length).toEqual(0)
-
-    slots.render('wrapper', () => { return <div className='replaced' /> })
-    mounted.update()
-    expect(mounted.find('.wrapped').length).toEqual(0)
-    expect(mounted.find('.replaced').length).toEqual(1)
-
-    slots.render('wrapper', () => { return <div className='anotherThing' /> })
-    mounted.update()
-    expect(mounted.find('.wrapped').length).toEqual(0)
-    expect(mounted.find('.replaced').length).toEqual(0)
-    expect(mounted.find('.anotherThing').length).toEqual(1)
-
-    slots.release()
-    expect(mounted.find('.wrapped').length).toEqual(1)
-    expect(mounted.find('.replaced').length).toEqual(0)
-    expect(mounted.find('.anotherThing').length).toEqual(0)
+  const [slots] = await new Promise((resolve) => {
+    experience({ owner: 'owner123' }).register(['wrapper'], (slots, React) => resolve([slots, React]))
   })
+
+  expect(mounted.find('.wrapped').length).toEqual(1)
+  expect(mounted.find('.replaced').length).toEqual(0)
+
+  slots.render('wrapper', () => { return <div className='replaced' /> })
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(0)
+  expect(mounted.find('.replaced').length).toEqual(1)
+
+  slots.render('wrapper', () => { return <div className='anotherThing' /> })
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(0)
+  expect(mounted.find('.replaced').length).toEqual(0)
+  expect(mounted.find('.anotherThing').length).toEqual(1)
+
+  slots.release()
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(1)
+  expect(mounted.find('.replaced').length).toEqual(0)
+  expect(mounted.find('.anotherThing').length).toEqual(0)
 })

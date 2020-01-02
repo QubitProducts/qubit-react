@@ -36,7 +36,7 @@ Ownership will not be taken until the `options.react.render()` method is called 
 In order to take ownership of a wrapper during the experience activation phase, use the `options.react.register()` method. You can claim multiple wrappers by passing in multiple wrapper IDs to register. This will return a promise that resolves once React is available and the wrapper is ready to render on the page.
 
 ```js
-function experienceActivation (options, cb) {
+module.exports = function experienceActivation (options, cb) {
   options.react.register(['header']).then(cb)
 }
 ```
@@ -48,7 +48,7 @@ function experienceActivation (options, cb) {
 Now that we are finally in execution phase, let's render some custom content into our wrapped component.
 
 ```js
-function experienceExecution (options) {
+module.exports = function experienceExecution (options) {
   const React = options.react.getReact()
 
   class NewHeader extends React.Component {
@@ -68,7 +68,7 @@ function experienceExecution (options) {
 Sometimes, it might be useful to render the original content temporarily. For example, if you show the original content, but then want to render something custom again, you could do this:
 
 ```js
-function experienceExecution (options) {
+module.exports = function experienceExecution (options) {
   const React = options.react.getReact()
 
   setTimeout(() => {
@@ -91,7 +91,7 @@ function experienceExecution (options) {
 Qubit Experiences will automatically take care of releasing wrapper ownership when experiences restart due to virtual page views. If for some reason you need to release ownership under other circumstances, there is a method available to do so:
 
 ```js
-function experienceExecution (options) {
+module.exports = function experienceExecution (options) {
   options.react.render('header', () => <NewContent />)
 
   setTimeout(() => {
@@ -105,7 +105,7 @@ function experienceExecution (options) {
 #### Activation
 
 ```js
-function experienceActivation (options, cb) {
+module.exports = function experienceActivation (options, cb) {
   var saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
   var remaining = saleEnds - Date.now()
   if (remaining > (60 * 60 * 1000)) return
@@ -119,7 +119,7 @@ function experienceActivation (options, cb) {
 #### Execution
 
 ```js
-function experienceExecution (options) {
+module.exports = function experienceExecution (options) {
   var saleEnds = options.state.get('saleEnds')
   var React = options.react.getReact()
 
