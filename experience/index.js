@@ -15,13 +15,13 @@ module.exports = function (meta) {
   return {
     getReact: function () {
       if (!React) {
-        throw new Error('React not available, you probably forgot to call `options.react.register()`')
+        throw new Error('React not available, you have either not called `options.react.register()` or have not waited until it has resolved')
       }
       return React
     },
     render: function (id, fn) {
       if (!render) {
-        throw new Error('No slots available to render, you probably forgot to call `options.react.register()`')
+        throw new Error('No slots available to render, you have either not called `options.react.register()` or have not waited until it has resolved')
       }
       render(id, fn)
     },

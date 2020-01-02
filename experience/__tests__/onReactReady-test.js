@@ -39,8 +39,7 @@ describe('onReactReady', () => {
     it('adds the cb to onReactReady array', () => {
       const cb = jest.fn()
       onReactReady().then(cb)
-      const ns = window.__qubit.react
-      expect(ns.onReactReady[0]())
+      window.__qubit.react.onReactReady[0]()
       expect(cb).toHaveBeenCalled()
     })
   })

@@ -42,10 +42,10 @@ module.exports = function createRegister (owner) {
       var wrapper = wrappers[id]
 
       if (!wrapper) {
-        boom('Slot "' + id + '" not found, did you forget to register it?')
+        boom('Cannot render into slot "' + id + '", it has not been registered')
       }
       if (!wrapper.canClaim()) {
-        boom('Cannot render into slot "' + id + '", it is already claimed')
+        boom('Cannot render into slot "' + id + '", it is already claimed by experience ' + wrapper.getOwner())
       }
       wrapper.render(fn)
     }

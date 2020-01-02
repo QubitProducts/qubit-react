@@ -10,6 +10,9 @@ module.exports = function getWrapper (registrar, id) {
     canClaim: function canClaim () {
       return !ns.owner || ns.owner === registrar
     },
+    getOwner: function getOwner () {
+      return ns.owner
+    },
     register: function register () {
       if (!ns.renderFunction) {
         ns.renderFunction = createRenderFunction(ns)
