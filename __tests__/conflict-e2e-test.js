@@ -2,7 +2,7 @@ import { mount } from 'enzyme'
 
 import experience from '../experience'
 
-it('e2e', () => {
+it('conflict', async () => {
   const React = require('react')
   const QubitReactWrapper = require('../wrapper')
   mount(
@@ -12,11 +12,14 @@ it('e2e', () => {
   )
 
   // claim a wrapper
-  experience({ owner: 'foo' }).register(['wrapper'], () => {})
+  const instance1 = experience({ owner: 'foo' })
+  await instance1.register(['wrapper'])
 
-  // try claiming the same one
-  const cb = jest.fn()
-  experience({ owner: 'bar' }).register(['wrapper'], cb)
+  const instance2 = experience({ owner: 'bar' })
+  await instance2.register(['wrapper'])
 
-  expect(cb).not.toHaveBeenCalled()
+  instance1.render('wrapper', () => null)
+  expect(() => {
+    instance2.render('wrapper', () => null)
+  }).toThrow(/it is already claimed/)
 })

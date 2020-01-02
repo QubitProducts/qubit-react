@@ -21,7 +21,7 @@ module.exports = function getWrapper (registrar, id) {
     },
     release: function release () {
       if (ns.owner === registrar) {
-        ns.ownerRenderFunction = null
+        ns.ownerRenderFunction = undefined
         update()
         ns.owner = undefined
       }

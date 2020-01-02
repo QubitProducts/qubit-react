@@ -15,66 +15,101 @@ describe('getWrapper', () => {
     window.__qubit = undefined
   })
 
-  describe('isClaimed', () => {
-    it('returns unclaimed correctly', () => {
-      expect(wrapper.isClaimed()).toEqual(false)
+  describe('register', () => {
+    it('sets the render function', () => {
+      expect(ns().renderFunction).toBeUndefined()
+      wrapper.register()
+      expect(ns().renderFunction).not.toBeUndefined()
     })
-    it('returns claimed correctly', () => {
-      window.__qubit.react.components[componentId].owner = 'MEEE'
-      expect(wrapper.isClaimed()).toEqual(true)
+    it('doesn\'t overwrite the render function if it already exists', () => {
+      wrapper.register()
+      const fn = ns().renderFunction
+      getWrapper(registrar2, componentId).register()
+      expect(ns().renderFunction).toBe(fn)
+    })
+    it('resolves once the render function is called', async () => {
+      const cb = jest.fn()
+      wrapper.register().then(cb)
+      expect(cb).not.toHaveBeenCalled()
+      ns().renderFunction({})
+      expect(cb).toHaveBeenCalled()
+    })
+    it('uses props.children when there is no owner render function', () => {
+      wrapper.register()
+      const result = ns().renderFunction({
+        children: 'foo'
+      }, null)
+      expect(result).toBe('foo')
+    })
+    it('uses the owner render function when it is available', () => {
+      const fn = jest.fn(() => 'bar')
+      const props = { children: 'foo' }
+      wrapper.register()
+      wrapper.render(fn)
+      const result = ns().renderFunction(props, 'REACT')
+      expect(result).toBe('bar')
+      expect(fn).toHaveBeenCalledWith(props, 'REACT')
+    })
+    it('calls the update function', () => {
+      const forceUpdate = jest.fn()
+      ns().instances = [{ forceUpdate }]
+      wrapper.register()
+      ns().renderFunction({})
+      expect(forceUpdate).toHaveBeenCalled()
     })
   })
 
-  describe('claim', () => {
-    it('claims the wrapper if it is free', () => {
-      wrapper.claim()
-      expect(window.__qubit.react.components[componentId].owner).not.toBeUndefined()
+  describe('canClaim', () => {
+    it('returns true if nobody has claimed it', () => {
+      expect(wrapper.canClaim()).toEqual(true)
     })
-    it('does not claim when the wrapper is already claimed', () => {
-      getWrapper(registrar2, componentId).claim()
-      const claimee = window.__qubit.react.components[componentId].owner
-      wrapper.claim()
-      expect(window.__qubit.react.components[componentId].owner).toBe(claimee)
+    it('returns true if we have already claimed it', () => {
+      ns().owner = registrar
+      expect(wrapper.canClaim()).toEqual(true)
+    })
+    it('returns false if someone else has claimed it', () => {
+      ns().owner = registrar2
+      expect(wrapper.canClaim()).toEqual(false)
     })
   })
 
   describe('release', () => {
     describe('if not claimed by the instance', () => {
       beforeEach(() => {
-        getWrapper(registrar2, componentId).claim()
+        getWrapper(registrar2, componentId).render(() => null)
       })
       it('does not release the wrapper', () => {
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].owner).not.toEqual(false)
+        expect(ns().owner).not.toEqual(false)
       })
-      it('does not remove the renderFunction', () => {
-        window.__qubit.react.components[componentId].renderFunction = noop
+      it('does not remove the render function', () => {
+        ns().ownerRenderFunction = noop
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].renderFunction).not.toBeUndefined()
+        expect(ns().ownerRenderFunction).not.toBeUndefined()
       })
       it('does not call the update funtions', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{ forceUpdate }]
+        ns().instances = [{ forceUpdate }]
         wrapper.release()
         expect(forceUpdate).not.toHaveBeenCalled()
       })
     })
     describe('if claimed by the instance', () => {
       beforeEach(() => {
-        wrapper.claim()
+        wrapper.render(() => null)
       })
       it('releases the wrapper', () => {
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].owner).toBeUndefined()
+        expect(ns().owner).toBeUndefined()
       })
-      it('removes the renderFunction', () => {
-        window.__qubit.react.components[componentId].renderFunction = noop
+      it('removes the owner render function', () => {
+        ns().ownerRenderFunction = noop
         wrapper.release()
-        expect(window.__qubit.react.components[componentId].renderFunction).toBeUndefined()
+        expect(ns().ownerRenderFunction).toBeUndefined()
       })
       it('calls the update functions', () => {
         const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{ forceUpdate }]
+        ns().instances = [{ forceUpdate }]
         wrapper.release()
         expect(forceUpdate).toHaveBeenCalled()
       })
@@ -82,38 +117,20 @@ describe('getWrapper', () => {
   })
 
   describe('render', () => {
-    describe('if not claimed by the instance', () => {
-      it('does not set the render function', () => {
-        wrapper.render(noop)
-        expect(window.__qubit.react.components[componentId].renderFunction).not.toBe(noop)
-      })
-      it('does not call update', () => {
-        const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{ forceUpdate }]
-        wrapper.render(noop)
-        expect(forceUpdate).not.toHaveBeenCalled()
-      })
-      it('returns false', () => {
-        expect(wrapper.render(noop)).toEqual(false)
-      })
+    it('sets the owner and render function', () => {
+      wrapper.render(noop)
+      expect(ns().owner).toBe(registrar)
+      expect(ns().ownerRenderFunction).toBe(noop)
     })
-    describe('if claimed by the instance', () => {
-      beforeEach(() => {
-        wrapper.claim()
-      })
-      it('sets the render function', () => {
-        wrapper.render(noop)
-        expect(window.__qubit.react.components[componentId].renderFunction).toBe(noop)
-      })
-      it('calls update', () => {
-        const forceUpdate = jest.fn()
-        window.__qubit.react.components[componentId].instances = [{ forceUpdate }]
-        wrapper.render(noop)
-        expect(forceUpdate).toHaveBeenCalled()
-      })
-      it('returns true', () => {
-        expect(wrapper.render(noop)).toEqual(true)
-      })
+    it('calls update', () => {
+      const forceUpdate = jest.fn()
+      ns().instances = [{ forceUpdate }]
+      wrapper.render(noop)
+      expect(forceUpdate).toHaveBeenCalled()
     })
   })
 })
+
+function ns () {
+  return window.__qubit.react.components[componentId]
+}
