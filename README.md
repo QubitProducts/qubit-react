@@ -215,6 +215,53 @@ window.__qubit.react.components.header.instances.forEach((instance) => instance.
 
 ## FAQ
 
+#### How and why should I migrate from the legacy `qubit-react/experience` package in my Experience code?
+
+At the beginning of January 2020, we deprecated the old callback-based wrapper registration method and introduced a new promised-based one in its place. This was done for two main reasons:
+
+1. The old API was overly-verbose and complex
+2. Under certain scenarios, wrapper ownership would be claimed when an experience wasn't actually going to fire, preventing all other experiences from claiming that wrapper.
+
+While both syntaxes are currently available, we will be removing support for the old callback-based registration in the future in version 2.0 of the `qubit-react/experience` package. Here is an example of how to upgrade to the new syntax:
+
+**Old**
+```js
+function experienceActivation (options, cb) {
+  const experience = require('qubit-react/experience')(options.meta)
+  const release = experience.register(['header'], function (slots, React) {
+    options.state.set('slots', slots)
+    options.state.set('React', React)
+  })
+  return {
+    remove: release
+  }
+}
+
+function experienceExecution (options) {
+  const React = options.state.get('React')
+  const slots = options.state.get('slots')
+  options.react.render('header', () => <div>New header!</div>)
+  return {
+    remove: slots.release
+  }
+}
+```
+
+**New**
+```js
+function experienceActivation (options, cb) {
+  // In the new version, the slots and React instance are accessed via the dedicated
+  // API interface, so there is no need to manually pass them through state.
+  options.react.register(['header']).then(cb)
+  // There is also no need to return a remove handler, because it is done for you.
+}
+
+function experienceExecution (options) {
+  const React = options.react.getReact()
+  options.react.render('header', () => <div>New header!</div>)
+}
+```
+
 #### Is it possible to disable Qubit Experiences in a testing environment?
 
 Yes. If you're already not loading Qubit's `smartserve.js` script in your testing environment then this shouldn't be an issue. Qubit React wrappers are a transparent noop pass through in that case and should not affect your tests. 
