@@ -12,8 +12,8 @@ To expose a component for use in Experiences, wrap the relevant components with 
 ```js
 import QubitReact from 'qubit-react/wrapper'
 
-<QubitReact id='header' ...props>
-  <Header ...props />
+<QubitReact id='header' {...props}>
+  <Header {...props} />
 </QubitReact>
 
 ```
@@ -23,61 +23,23 @@ A unique `id` is required for each wrapped component. It is recommended that all
 ## Usage
 _This section refers to the code that you write inside Qubit's platform._
 
-In Qubit Experiences use `qubit-react/experience` to interact with the wrapper.
+In Qubit Experiences you can interact interact with the wrapper using the `options.react` interface.
 
 ### Activation
 
-#### Setup
-
-First initiate the library by passing in the experience meta information.
-
-```js
-function experienceActivation (options, cb) {
-  var experience = require('qubit-react/experience')(options.meta)
-}
-```
-
-#### Claiming Wrapper Ownership
+#### Registering for Wrapper Ownership
 
 Qubit React has a concept of wrapper ownership. This means that only a single experience can control the contents of a wrapper at any given time. This reduces conflicts between experiences attempting to modify the same component.
 
-In order to take ownership of a wrapper during the experience activation phase, use the `experience.register` function. You can claim multiple wrappers by passing in multiple wrapper IDs to register.
+Ownership will not be taken until the `options.react.render()` method is called in the experience execution function. It is your job to ensure that multiple experiences do not try to execute at the same time. If they do, only the first experience will execute succesfully; all subsequent attempts will result in an error being thrown.
+
+In order to take ownership of a wrapper during the experience activation phase, use the `options.react.register()` method. You can claim multiple wrappers by passing in multiple wrapper IDs to register. This will return a promise that resolves once React is available and the wrapper is ready to render on the page.
 
 ```js
-function experienceActivation (options, cb) {
-  var experience = require('qubit-react/experience')(options.meta)
-
-  experience.register(['header'], function (slots, React) {
-    // If we get here, it means we have successfully claimed the wrapper
-  })
+module.exports = function experienceActivation (options, cb) {
+  options.react.register(['header']).then(cb)
 }
 ```
-
-#### Releasing Wrapper Ownership
-
-```js
-function experienceActivation (options, cb) {
-  var experience = require('qubit-react/experience')(options.meta)
-
-  var release = experience.register(['header'], function (slots, React) {    
-    // use state to pass the slots and React to execution
-    options.state.set('slots', slots)
-    options.state.set('React', React)
-    cb()
-  })
-
-  return {
-    remove: function () {
-      // important to release the ownership of the wrappers
-      // so that other experiences on other virtual pageviews
-      // can claim them.
-      release()
-    }
-  }
-}
-```
-
-Calling `release` will render the original content of the wrapped component and release the ownership so that other experiences can claim it.
 
 ### Execution
 
@@ -86,9 +48,8 @@ Calling `release` will render the original content of the wrapped component and 
 Now that we are finally in execution phase, let's render some custom content into our wrapped component.
 
 ```js
-function experienceExecution (options) {
-  var React = options.state.get('React')
-  var slots = options.state.get('slots')
+module.exports = function experienceExecution (options) {
+  const React = options.react.getReact()
 
   class NewHeader extends React.Component {
     render () {
@@ -96,15 +57,9 @@ function experienceExecution (options) {
     }
   }
 
-  slots.render('header', function (props) {
+  options.react.render('header', function (props) {
     return <NewHeader />
   })
-  
-  return {
-    remove: function () {
-      slots.release()
-    }
-  }
 }
 ```
 
@@ -113,71 +68,60 @@ function experienceExecution (options) {
 Sometimes, it might be useful to render the original content temporarily. For example, if you show the original content, but then want to render something custom again, you could do this:
 
 ```js
-function experienceExecution (options) {
-  var React = options.state.get('React')
-  var slots = options.state.get('slots')
-  
-  // ...
+module.exports = function experienceExecution (options) {
+  const React = options.react.getReact()
 
   setTimeout(() => {
     // renders original content
-    slots.render('header', function (props) {
+    options.react.render('header', function (props) {
       return props.children
     })
     setTimeout(() => {
       // renders new content again
-      slots.render('header', function (props) {
+      options.react.render('header', function (props) {
         return <NewContent />
       })
     }, 5000)
   }, 5000)
-  
-  return {
-    remove: function () {
-      slots.release()
-    }
-  }
 }
 ```
 
-It's different from calling `slots.release()`, because release is final and the wrapper can't be used again in this experience. It's really meant for cleanup between virtual page views.
+### Manually releasing ownership
+
+Qubit Experiences will automatically take care of releasing wrapper ownership when experiences restart due to virtual page views. If for some reason you need to release ownership under other circumstances, there is a method available to do so:
+
+```js
+module.exports = function experienceExecution (options) {
+  options.react.render('header', () => <NewContent />)
+
+  setTimeout(() => {
+    options.react.release()
+  }, 5000)
+}
+```
 
 ### Real World Example
 
 #### Activation
 
 ```js
-function experienceActivation (options, cb) {
-  var experience = require('qubit-react/experience')(options.meta)
-
-  var saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
-  var remaining = saleEnds - Date.now()
+module.exports = function experienceActivation (options, cb) {
+  const saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
+  const remaining = saleEnds - Date.now()
   if (remaining > (60 * 60 * 1000)) return
   if (remaining < 0) return
 
-  var release = experience.register([
-    'header-subtitle-text',
-    'promo-banner-text'
-  ], function (slots, React) {
-    options.state.set('saleEnds', saleEnds)
-    options.state.set('slots', slots)
-    options.state.set('React', React)
-    cb()
-  })
-
-  return {
-    remove: release
-  }
+  options.state.set('saleEnds', saleEnds)
+  options.react.register(['header-subtitle-text', 'promo-banner-text'], cb)
 }
 ```
 
 #### Execution
 
 ```js
-function experienceExecution (options) {
-  var saleEnds = options.state.get('saleEnds')
-  var React = options.state.get('React')
-  var slots = options.state.get('slots')
+module.exports = function experienceExecution (options) {
+  const saleEnds = options.state.get('saleEnds')
+  const React = options.react.getReact()
 
   class Countdown extends React.Component {
     componentWillMount () {
@@ -190,6 +134,7 @@ function experienceExecution (options) {
         this.setState({ remaining: endDate - Date.now() })
         if (remaining < 0) {
           clearInterval(interval)
+          options.react.release()
         }
       }, 1000)
     }
@@ -202,17 +147,13 @@ function experienceExecution (options) {
     }
   }
 
-  slots.render('header-subtitle-text', function (props) {
+  options.react.render('header-subtitle-text', function (props) {
     return <span>Great offers somewhere...</span>
   })
 
-  slots.render('promo-banner-text', function (props) {
+  options.react.render('promo-banner-text', function (props) {
     return <Countdown endDate={saleEnds} />
   })
-
-  return {
-    remove: slots.release
-  }
 }
 
 ```
@@ -235,7 +176,7 @@ This section provides technical details on how the wrapper works.
 
 #### Determining render function
 
-When a wrapper is first mounted, it creates an object under `window.__qubit.react.components[id]`, where the `id` is unique to the wrapper. There are two things on the object we care about:
+When a wrapper is first mounted, it creates an object under `window.__qubit.react.components[id]`, where the `id` is unique to the wrapper. There are three things on the object we care about:
 
 ```js
 {
@@ -257,8 +198,14 @@ window.__qubit.react = window.__qubit.react || {}
 window.__qubit.react.components = window.__qubit.react.components || {}
 window.__qubit.react.components.header = window.__qubit.react.components.header || {}
 
-// Add the handler
+// Add the generic handler to be called by the wrapper
 window.__qubit.react.components.header.renderFunction = function (props, React) {
+  // If an experience handler is available, use that, otherwise return props.children
+}
+
+// Register the specific experience handler
+window.__qubit.react.components.header.owner = '12345' // experience ID
+window.__qubit.react.components.header.ownerRenderFunction = function (props, React) {
   return <h2>New Site Header!</h2>
 }
 
@@ -267,6 +214,53 @@ window.__qubit.react.components.header.instances.forEach((instance) => instance.
 ```
 
 ## FAQ
+
+#### How and why should I migrate from the legacy `qubit-react/experience` package in my Experience code?
+
+At the beginning of January 2020, we deprecated the old callback-based wrapper registration method and introduced a new promised-based one in its place. This was done for two main reasons:
+
+1. The old API was overly-verbose and complex
+2. Under certain scenarios, wrapper ownership would be claimed when an experience wasn't actually going to fire, preventing all other experiences from claiming that wrapper.
+
+While both APIs are currently available, we will be removing support for the old callback-based registration in the future in version 2.0 of the `qubit-react/experience` package. Here is an example of how to upgrade to the new format:
+
+**Old**
+```js
+function experienceActivation (options, cb) {
+  const experience = require('qubit-react/experience')(options.meta)
+  const release = experience.register(['header'], function (slots, React) {
+    options.state.set('slots', slots)
+    options.state.set('React', React)
+  })
+  return {
+    remove: release
+  }
+}
+
+function experienceExecution (options) {
+  const React = options.state.get('React')
+  const slots = options.state.get('slots')
+  options.react.render('header', () => <div>New header!</div>)
+  return {
+    remove: slots.release
+  }
+}
+```
+
+**New**
+```js
+function experienceActivation (options, cb) {
+  // In the new version, the slots and React instance are accessed via the dedicated
+  // API interface, so there is no need to manually pass them through state.
+  options.react.register(['header']).then(cb)
+  // There is also no need to return a remove handler, because it is done for you.
+}
+
+function experienceExecution (options) {
+  const React = options.react.getReact()
+  options.react.render('header', () => <div>New header!</div>)
+}
+```
 
 #### Is it possible to disable Qubit Experiences in a testing environment?
 

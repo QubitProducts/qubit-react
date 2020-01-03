@@ -1,11 +1,58 @@
+var Promise = require('sync-p')
 var createRegister = require('./createRegister')
+var log = require('./createLogger')
 
 module.exports = function (meta) {
   var owner = meta && (meta.owner || meta.experimentId)
   if (!owner) {
     throw new Error('No owner specified')
   }
+
+  var hasLoggedDeprecation = false
+  var register = createRegister(owner)
+  var release = null
+  var render = null
+  var React = null
+
   return {
-    register: createRegister(owner)
+    getReact: function () {
+      if (!React) {
+        throw new Error('React not available, you have either not called `options.react.register()` or have not waited until it has resolved')
+      }
+      return React
+    },
+    render: function (id, fn) {
+      if (!render) {
+        throw new Error('No slots available to render, you have either not called `options.react.register()` or have not waited until it has resolved')
+      }
+      render(id, fn)
+    },
+    release: function () {
+      if (release) {
+        release()
+      }
+    },
+    register: function (ids, cb) {
+      if (release) {
+        throw new Error('Register should only be called once per experience')
+      }
+
+      if (cb) {
+        if (!hasLoggedDeprecation) {
+          log.warn('You are using the deprecated callback-based registration method in experience ' + owner + '. Go to https://docs.qubit.com to find out how and why to upgrade to the new promise-based approach.')
+          hasLoggedDeprecation = true
+        }
+        release = register(ids, cb)
+        return release
+      } else {
+        return new Promise(function (resolve) {
+          release = register(ids, function (slots, _React) {
+            render = slots.render
+            React = _React
+            resolve()
+          })
+        })
+      }
+    }
   }
 }

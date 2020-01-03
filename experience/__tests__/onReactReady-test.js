@@ -20,12 +20,12 @@ describe('onReactReady', () => {
     })
     it('runs the cb', () => {
       const cb = jest.fn()
-      onReactReady(cb)
+      onReactReady().then(cb)
       expect(cb).toHaveBeenCalled()
     })
     it('calls the cb with React', () => {
       const cb = jest.fn()
-      onReactReady(cb)
+      onReactReady().then(cb)
       expect(cb).toHaveBeenCalledWith(React)
     })
   })
@@ -33,14 +33,14 @@ describe('onReactReady', () => {
   describe('if react is not ready', () => {
     it('does not run the cb', () => {
       const cb = jest.fn()
-      onReactReady(cb)
+      onReactReady().then(cb)
       expect(cb).not.toHaveBeenCalled()
     })
     it('adds the cb to onReactReady array', () => {
       const cb = jest.fn()
-      onReactReady(cb)
-      const ns = window.__qubit.react
-      expect(ns.onReactReady[0]).toBe(cb)
+      onReactReady().then(cb)
+      window.__qubit.react.onReactReady[0]()
+      expect(cb).toHaveBeenCalled()
     })
   })
 })
