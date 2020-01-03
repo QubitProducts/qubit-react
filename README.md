@@ -106,8 +106,8 @@ module.exports = function experienceExecution (options) {
 
 ```js
 module.exports = function experienceActivation (options, cb) {
-  var saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
-  var remaining = saleEnds - Date.now()
+  const saleEnds = Date.UTC(2017, 0, 1, 0, 0, 0)
+  const remaining = saleEnds - Date.now()
   if (remaining > (60 * 60 * 1000)) return
   if (remaining < 0) return
 
@@ -120,8 +120,8 @@ module.exports = function experienceActivation (options, cb) {
 
 ```js
 module.exports = function experienceExecution (options) {
-  var saleEnds = options.state.get('saleEnds')
-  var React = options.react.getReact()
+  const saleEnds = options.state.get('saleEnds')
+  const React = options.react.getReact()
 
   class Countdown extends React.Component {
     componentWillMount () {
@@ -222,7 +222,7 @@ At the beginning of January 2020, we deprecated the old callback-based wrapper r
 1. The old API was overly-verbose and complex
 2. Under certain scenarios, wrapper ownership would be claimed when an experience wasn't actually going to fire, preventing all other experiences from claiming that wrapper.
 
-While both syntaxes are currently available, we will be removing support for the old callback-based registration in the future in version 2.0 of the `qubit-react/experience` package. Here is an example of how to upgrade to the new syntax:
+While both APIs are currently available, we will be removing support for the old callback-based registration in the future in version 2.0 of the `qubit-react/experience` package. Here is an example of how to upgrade to the new format:
 
 **Old**
 ```js
