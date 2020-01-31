@@ -38,6 +38,47 @@ it('e2e - modern', async () => {
   expect(mounted.find('.anotherThing').length).toEqual(0)
 })
 
+it('e2e - multiple slots', async () => {
+  const React = require('react')
+  const QubitReactWrapper = require('../wrapper')
+  const mounted = mount(
+    <div>
+      <QubitReactWrapper id='wrapper1'>
+        <div className='wrapped' />
+      </QubitReactWrapper>
+      <QubitReactWrapper id='wrapper2'>
+        <div className='wrapped' />
+      </QubitReactWrapper>
+    </div>
+  )
+
+  const instance = experience({ owner: 'owner123' })
+  await instance.register(['wrapper1'])
+  expect(mounted.find('.wrapped').length).toEqual(2)
+  expect(mounted.find('.replaced').length).toEqual(0)
+
+  instance.render('wrapper1', () => <div className='replaced' />)
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(1)
+  expect(mounted.find('.replaced').length).toEqual(1)
+
+  await instance.register(['wrapper2'])
+  instance.render('wrapper2', () => <div className='replaced' />)
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(0)
+  expect(mounted.find('.replaced').length).toEqual(2)
+
+  instance.release('wrapper1')
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(1)
+  expect(mounted.find('.replaced').length).toEqual(1)
+
+  instance.release()
+  mounted.update()
+  expect(mounted.find('.wrapped').length).toEqual(2)
+  expect(mounted.find('.replaced').length).toEqual(0)
+})
+
 it('e2e - legacy', async () => {
   const React = require('react')
   const QubitReactWrapper = require('../wrapper')
