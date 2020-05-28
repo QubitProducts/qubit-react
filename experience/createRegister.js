@@ -29,10 +29,14 @@ module.exports = function createRegister (owner) {
     all(registrations)
       .then(onReactReady)
       .then(function (React) {
-        cb({
-          render: render,
-          release: release
-        }, React)
+        // This setTimeout is to ensure that we store the release function of the
+        // registration in index.js _before_ we store the render function.
+        setTimeout(function () {
+          cb({
+            render: render,
+            release: release
+          }, React)
+        }, 0)
       })
 
     return release

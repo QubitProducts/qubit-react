@@ -62,7 +62,7 @@ module.exports = function (meta) {
       } else {
         return new Promise(function (resolve) {
           release = register(ids, function (slots, _React) {
-            storePerId('render', slots.render)
+            storePerId('render', slots.render, { ifExists: true })
             React = _React
             resolve()
           })
@@ -70,8 +70,13 @@ module.exports = function (meta) {
         })
       }
 
-      function storePerId (key, value) {
+      function storePerId (key, value, opts) {
+        opts = opts || {}
         _.each(ids, function (id) {
+          // This check makes sure we don't accidentally 're-register' something
+          // that was released before registration completed.
+          if (opts.ifExists && !registrations[id]) return
+
           registrations[id] = registrations[id] || {}
           registrations[id][key] = value
         })
