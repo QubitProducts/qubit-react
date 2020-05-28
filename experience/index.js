@@ -70,11 +70,12 @@ module.exports = function (meta) {
         })
       }
 
-      function storePerId (key, value, { ifExists } = {}) {
+      function storePerId (key, value, opts) {
+        opts = opts || {}
         _.each(ids, function (id) {
           // This check makes sure we don't accidentally 're-register' something
           // that was released before registration completed.
-          if (ifExists && !registrations[id]) return
+          if (opts.ifExists && !registrations[id]) return
 
           registrations[id] = registrations[id] || {}
           registrations[id][key] = value
